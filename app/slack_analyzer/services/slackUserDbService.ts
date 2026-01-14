@@ -11,26 +11,26 @@ export class SlackUserDbService {
       const { data: existingWorkspace } = await supabase
         .from('workspaces')
         .select('id')
-        .eq('team_id', workspace.team_id)
-        .single();
-      
+        .eq('team_id', workspace.team_id!)
+        .single() as { data: { id: string } | null };
+
       if (existingWorkspace) {
         // Update existing workspace
         const { error } = await supabase
           .from('workspaces')
-          .update(workspace)
-          .eq('team_id', workspace.team_id);
-        
+          .update(workspace as never)
+          .eq('team_id', workspace.team_id!);
+
         if (error) throw error;
         return existingWorkspace.id;
       } else {
         // Insert new workspace
         const { data, error } = await supabase
           .from('workspaces')
-          .insert(workspace)
+          .insert(workspace as never)
           .select('id')
-          .single();
-        
+          .single() as { data: { id: string }; error: unknown };
+
         if (error) throw error;
         return data.id;
       }
@@ -49,14 +49,14 @@ export class SlackUserDbService {
       const batchSize = 100;
       for (let i = 0; i < users.length; i += batchSize) {
         const batch = users.slice(i, i + batchSize);
-        
+
         const { error } = await supabase
           .from('slack_users')
-          .upsert(batch, { 
+          .upsert(batch as never, {
             onConflict: 'workspace_id,user_id',
             ignoreDuplicates: false
           });
-        
+
         if (error) throw error;
       }
     } catch (error) {
