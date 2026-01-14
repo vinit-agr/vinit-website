@@ -7,14 +7,17 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB;
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
+  console.warn('MONGODB_URI is not defined. MongoDB features will be disabled.');
 }
 
 if (!MONGODB_DB) {
-  throw new Error('Please define the MONGODB_DB environment variable');
+  console.warn('MONGODB_DB is not defined. MongoDB features will be disabled.');
 }
 
 export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
+  if (!MONGODB_URI || !MONGODB_DB) {
+    throw new Error('MongoDB is not configured. Please set MONGODB_URI and MONGODB_DB environment variables.');
+  }
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
   }
@@ -51,5 +54,7 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
   return { client, db };
 }
 
-// Initialize the connection when the app starts
-connectToDatabase().catch(console.error);
+// Initialize the connection when the app starts (only if configured)
+if (MONGODB_URI && MONGODB_DB) {
+  connectToDatabase().catch(console.error);
+}

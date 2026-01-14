@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       size: resolution as SupportedSize,
     });
 
-    const imageUrl = response.data[0].url;
+    const imageUrl = response.data?.[0]?.url;
 
     if (imageUrl) {
       console.log('Image generated successfully. URL:', imageUrl);

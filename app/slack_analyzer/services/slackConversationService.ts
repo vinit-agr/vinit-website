@@ -110,8 +110,8 @@ export class SlackConversationService {
         .select('id')
         .eq('thread_id', conversation.thread_id)
         .eq('workspace_id', workspaceId)
-        .single();
-      
+        .single() as { data: { id: string } | null };
+
       if (existingConversation) {
         // Update existing conversation
         const { error } = await supabase
@@ -120,9 +120,9 @@ export class SlackConversationService {
             conversation_text: conversationText,
             participant_count: conversation.participant_count,
             updated_at: new Date().toISOString()
-          })
+          } as never)
           .eq('id', existingConversation.id);
-        
+
         if (error) throw error;
         return existingConversation.id;
       } else {
@@ -135,10 +135,10 @@ export class SlackConversationService {
             workspace_id: workspaceId,
             conversation_text: conversationText,
             participant_count: conversation.participant_count
-          })
+          } as never)
           .select('id')
-          .single();
-        
+          .single() as { data: { id: string }; error: unknown };
+
         if (error) throw error;
         return data.id;
       }
