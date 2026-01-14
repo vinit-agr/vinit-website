@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code transcript - page 4</title>
+    <style>
+:root { --bg-color: #f5f5f5; --card-bg: #ffffff; --user-bg: #e3f2fd; --user-border: #1976d2; --assistant-bg: #f5f5f5; --assistant-border: #9e9e9e; --thinking-bg: #fff8e1; --thinking-border: #ffc107; --thinking-text: #666; --tool-bg: #f3e5f5; --tool-border: #9c27b0; --tool-result-bg: #e8f5e9; --tool-error-bg: #ffebee; --text-color: #212121; --text-muted: #757575; --code-bg: #263238; --code-text: #aed581; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 16px; line-height: 1.6; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.5rem; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 2px solid var(--user-border); }
+.header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 2px solid var(--user-border); padding-bottom: 8px; margin-bottom: 24px; }
+.header-row h1 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; flex: 1; min-width: 200px; }
+.message { margin-bottom: 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.message.user { background: var(--user-bg); border-left: 4px solid var(--user-border); }
+.message.assistant { background: var(--card-bg); border-left: 4px solid var(--assistant-border); }
+.message.tool-reply { background: #fff8e1; border-left: 4px solid #ff9800; }
+.tool-reply .role-label { color: #e65100; }
+.tool-reply .tool-result { background: transparent; padding: 0; margin: 0; }
+.tool-reply .tool-result .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, #fff8e1); }
+.message-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: rgba(0,0,0,0.03); font-size: 0.85rem; }
+.role-label { font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.user .role-label { color: var(--user-border); }
+time { color: var(--text-muted); font-size: 0.8rem; }
+.timestamp-link { color: inherit; text-decoration: none; }
+.timestamp-link:hover { text-decoration: underline; }
+.message:target { animation: highlight 2s ease-out; }
+@keyframes highlight { 0% { background-color: rgba(25, 118, 210, 0.2); } 100% { background-color: transparent; } }
+.message-content { padding: 16px; }
+.message-content p { margin: 0 0 12px 0; }
+.message-content p:last-child { margin-bottom: 0; }
+.thinking { background: var(--thinking-bg); border: 1px solid var(--thinking-border); border-radius: 8px; padding: 12px; margin: 12px 0; font-size: 0.9rem; color: var(--thinking-text); }
+.thinking-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #f57c00; margin-bottom: 8px; }
+.thinking p { margin: 8px 0; }
+.assistant-text { margin: 8px 0; }
+.tool-use { background: var(--tool-bg); border: 1px solid var(--tool-border); border-radius: 8px; padding: 12px; margin: 12px 0; }
+.tool-header { font-weight: 600; color: var(--tool-border); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.tool-icon { font-size: 1.1rem; }
+.tool-description { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; font-style: italic; }
+.tool-result { background: var(--tool-result-bg); border-radius: 8px; padding: 12px; margin: 12px 0; }
+.tool-result.tool-error { background: var(--tool-error-bg); }
+.file-tool { border-radius: 8px; padding: 12px; margin: 12px 0; }
+.write-tool { background: linear-gradient(135deg, #e3f2fd 0%, #e8f5e9 100%); border: 1px solid #4caf50; }
+.edit-tool { background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%); border: 1px solid #ff9800; }
+.file-tool-header { font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+.write-header { color: #2e7d32; }
+.edit-header { color: #e65100; }
+.file-tool-icon { font-size: 1rem; }
+.file-tool-path { font-family: monospace; background: rgba(0,0,0,0.08); padding: 2px 8px; border-radius: 4px; }
+.file-tool-fullpath { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; word-break: break-all; }
+.file-content { margin: 0; }
+.edit-section { display: flex; margin: 4px 0; border-radius: 4px; overflow: hidden; }
+.edit-label { padding: 8px 12px; font-weight: bold; font-family: monospace; display: flex; align-items: flex-start; }
+.edit-old { background: #fce4ec; }
+.edit-old .edit-label { color: #b71c1c; background: #f8bbd9; }
+.edit-old .edit-content { color: #880e4f; }
+.edit-new { background: #e8f5e9; }
+.edit-new .edit-label { color: #1b5e20; background: #a5d6a7; }
+.edit-new .edit-content { color: #1b5e20; }
+.edit-content { margin: 0; flex: 1; background: transparent; font-size: 0.85rem; }
+.edit-replace-all { font-size: 0.75rem; font-weight: normal; color: var(--text-muted); }
+.write-tool .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, #e6f4ea); }
+.edit-tool .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, #fff0e5); }
+.todo-list { background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); border: 1px solid #81c784; border-radius: 8px; padding: 12px; margin: 12px 0; }
+.todo-header { font-weight: 600; color: #2e7d32; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+.todo-items { list-style: none; margin: 0; padding: 0; }
+.todo-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.9rem; }
+.todo-item:last-child { border-bottom: none; }
+.todo-icon { flex-shrink: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%; }
+.todo-completed .todo-icon { color: #2e7d32; background: rgba(46, 125, 50, 0.15); }
+.todo-completed .todo-content { color: #558b2f; text-decoration: line-through; }
+.todo-in-progress .todo-icon { color: #f57c00; background: rgba(245, 124, 0, 0.15); }
+.todo-in-progress .todo-content { color: #e65100; font-weight: 500; }
+.todo-pending .todo-icon { color: #757575; background: rgba(0,0,0,0.05); }
+.todo-pending .todo-content { color: #616161; }
+pre { background: var(--code-bg); color: var(--code-text); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; margin: 8px 0; white-space: pre-wrap; word-wrap: break-word; }
+pre.json { color: #e0e0e0; }
+code { background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+pre code { background: none; padding: 0; }
+.user-content { margin: 0; }
+.truncatable { position: relative; }
+.truncatable.truncated .truncatable-content { max-height: 200px; overflow: hidden; }
+.truncatable.truncated::after { content: ''; position: absolute; bottom: 32px; left: 0; right: 0; height: 60px; background: linear-gradient(to bottom, transparent, var(--card-bg)); pointer-events: none; }
+.message.user .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, var(--user-bg)); }
+.message.tool-reply .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, #fff8e1); }
+.tool-use .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, var(--tool-bg)); }
+.tool-result .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, var(--tool-result-bg)); }
+.expand-btn { display: none; width: 100%; padding: 8px 16px; margin-top: 4px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); }
+.expand-btn:hover { background: rgba(0,0,0,0.1); }
+.truncatable.truncated .expand-btn, .truncatable.expanded .expand-btn { display: block; }
+.pagination { display: flex; justify-content: center; gap: 8px; margin: 24px 0; flex-wrap: wrap; }
+.pagination a, .pagination span { padding: 5px 10px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; }
+.pagination a { background: var(--card-bg); color: var(--user-border); border: 1px solid var(--user-border); }
+.pagination a:hover { background: var(--user-bg); }
+.pagination .current { background: var(--user-border); color: white; }
+.pagination .disabled { color: var(--text-muted); border: 1px solid #ddd; }
+.pagination .index-link { background: var(--user-border); color: white; }
+details.continuation { margin-bottom: 16px; }
+details.continuation summary { cursor: pointer; padding: 12px 16px; background: var(--user-bg); border-left: 4px solid var(--user-border); border-radius: 12px; font-weight: 500; color: var(--text-muted); }
+details.continuation summary:hover { background: rgba(25, 118, 210, 0.15); }
+details.continuation[open] summary { border-radius: 12px 12px 0 0; margin-bottom: 0; }
+.index-item { margin-bottom: 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: var(--user-bg); border-left: 4px solid var(--user-border); }
+.index-item a { display: block; text-decoration: none; color: inherit; }
+.index-item a:hover { background: rgba(25, 118, 210, 0.1); }
+.index-item-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: rgba(0,0,0,0.03); font-size: 0.85rem; }
+.index-item-number { font-weight: 600; color: var(--user-border); }
+.index-item-content { padding: 16px; }
+.index-item-stats { padding: 8px 16px 12px 32px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid rgba(0,0,0,0.06); }
+.index-item-commit { margin-top: 6px; padding: 4px 8px; background: #fff3e0; border-radius: 4px; font-size: 0.85rem; color: #e65100; }
+.index-item-commit code { background: rgba(0,0,0,0.08); padding: 1px 4px; border-radius: 3px; font-size: 0.8rem; margin-right: 6px; }
+.commit-card { margin: 8px 0; padding: 10px 14px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 6px; }
+.commit-card a { text-decoration: none; color: #5d4037; display: block; }
+.commit-card a:hover { color: #e65100; }
+.commit-card-hash { font-family: monospace; color: #e65100; font-weight: 600; margin-right: 8px; }
+.index-commit { margin-bottom: 12px; padding: 10px 16px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.index-commit a { display: block; text-decoration: none; color: inherit; }
+.index-commit a:hover { background: rgba(255, 152, 0, 0.1); margin: -10px -16px; padding: 10px 16px; border-radius: 8px; }
+.index-commit-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; margin-bottom: 4px; }
+.index-commit-hash { font-family: monospace; color: #e65100; font-weight: 600; }
+.index-commit-msg { color: #5d4037; }
+.index-item-long-text { margin-top: 8px; padding: 12px; background: var(--card-bg); border-radius: 8px; border-left: 3px solid var(--assistant-border); }
+.index-item-long-text .truncatable.truncated::after { background: linear-gradient(to bottom, transparent, var(--card-bg)); }
+.index-item-long-text-content { color: var(--text-color); }
+#search-box { display: none; align-items: center; gap: 8px; }
+#search-box input { padding: 6px 12px; border: 1px solid var(--assistant-border); border-radius: 6px; font-size: 16px; width: 180px; }
+#search-box button, #modal-search-btn, #modal-close-btn { background: var(--user-border); color: white; border: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#search-box button:hover, #modal-search-btn:hover { background: #1565c0; }
+#modal-close-btn { background: var(--text-muted); margin-left: 8px; }
+#modal-close-btn:hover { background: #616161; }
+#search-modal[open] { border: none; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.2); padding: 0; width: 90vw; max-width: 900px; height: 80vh; max-height: 80vh; display: flex; flex-direction: column; }
+#search-modal::backdrop { background: rgba(0,0,0,0.5); }
+.search-modal-header { display: flex; align-items: center; gap: 8px; padding: 16px; border-bottom: 1px solid var(--assistant-border); background: var(--bg-color); border-radius: 12px 12px 0 0; }
+.search-modal-header input { flex: 1; padding: 8px 12px; border: 1px solid var(--assistant-border); border-radius: 6px; font-size: 16px; }
+#search-status { padding: 8px 16px; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid rgba(0,0,0,0.06); }
+#search-results { flex: 1; overflow-y: auto; padding: 16px; }
+.search-result { margin-bottom: 16px; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.search-result a { display: block; text-decoration: none; color: inherit; }
+.search-result a:hover { background: rgba(25, 118, 210, 0.05); }
+.search-result-page { padding: 6px 12px; background: rgba(0,0,0,0.03); font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid rgba(0,0,0,0.06); }
+.search-result-content { padding: 12px; }
+.search-result mark { background: #fff59d; padding: 1px 2px; border-radius: 2px; }
+@media (max-width: 600px) { body { padding: 8px; } .message, .index-item { border-radius: 8px; } .message-content, .index-item-content { padding: 12px; } pre { font-size: 0.8rem; padding: 8px; } #search-box input { width: 120px; } #search-modal[open] { width: 95vw; height: 90vh; } }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1><a href="index.html" style="color: inherit; text-decoration: none;">Claude Code transcript</a> - page 4/11</h1>
+        
+
+<div class="pagination">
+<a href="index.html" class="index-link">Index</a>
+<a href="page-003.html">&larr; Prev</a>
+<a href="page-001.html">1</a>
+<a href="page-002.html">2</a>
+<a href="page-003.html">3</a>
+<span class="current">4</span>
+<a href="page-005.html">5</a>
+<a href="page-006.html">6</a>
+<a href="page-007.html">7</a>
+<a href="page-008.html">8</a>
+<a href="page-009.html">9</a>
+<a href="page-010.html">10</a>
+<a href="page-011.html">11</a>
+<a href="page-005.html">Next &rarr;</a>
+</div>
+
+        
+<div class="message user" id="msg-2026-01-13T07-28-12-367Z"><div class="message-header"><span class="role-label">User</span><a href="#msg-2026-01-13T07-28-12-367Z" class="timestamp-link"><time datetime="2026-01-13T07:28:12.367Z" data-timestamp="2026-01-13T07:28:12.367Z">2026-01-13T07:28:12.367Z</time></a></div><div class="message-content">
+<div class="user-content"><p>Let's just brainstorm a bit. Make a brainstorm.markdown file and put all your thoughts in that.
+So I am thinking of a bit of a rehaul, I only want to give the text corpus which is just a bunch of markdown files in a folder as the starting point and from that I want one step for synthetic data generation, another step to do the actual evaluation.
+So in the synthetic data generation the data will also be sent to LangSmith, optionally you can also keep it in the code itself as a variable, but mostly the default will be sending it to LangSmith.
+And then as a next step running the evaluation by passing the data corpus and folder with markdown files and the LangSmith dataset.
+To create an evaluation class and then run it with given chunker, embedded k-value re-ranker, optionally all those things which is already there in the codebase or which is already there in the readme file if you look at it, that is the interface that has been made.
+So I want to do this but I want to introduce two approaches:
+1. Chunk-level evaluation
+2. Token-level evaluation
+This will actually determine how we are basically generating synthetic data, how we actually chunking it as well at the evaluation time, and how we are evaluating it because evaluation metric itself will be very different based on whether it's chunk-level evaluation or token-level evaluation.
+But for any particular evaluation, there should be one type of valuation at the chunk level or token level evaluation.
+So I want to brainstorm on how I should make this in a way so that whenever someone is running this evaluation and starting with the text corpus, they should first select what they want to do (chunk-level evolution or token-level evolution).
+And there should be properly typed as well at every level, including the LangSmith dataset level, so that it's very clear that the LangSmith dataset which is a ground truth dataset for question-answer and reference chunks or reference segments pairs, tuples, will also have different shapes depending on whether we want to do chunk-level or token-level evaluation.
+And for the token-level evaluation, we'll use the same strategy as character span range that is there in the other repo by Chroma.
+So help me do this brainstorm about how we should rebuild this whole pipeline and interfaces. Feel free to make changes in the interfaces in a good way. Keep it all strongly typed and suggest a good approach overall that we can use.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-28-22-282Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-28-22-282Z" class="timestamp-link"><time datetime="2026-01-13T07:28:22.282Z" data-timestamp="2026-01-13T07:28:22.282Z">2026-01-13T07:28:22.282Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>The user wants me to create a brainstorm document about restructuring the RAG evaluation framework. They want:</p>
+<ol>
+<li>Two distinct evaluation approaches: Chunk-level and Token-level (using character spans like Chroma)</li>
+<li>A pipeline that starts from text corpus (markdown files in a folder)</li>
+<li>Synthetic data generation step that sends data to LangSmith</li>
+<li>Evaluation step that uses the corpus + LangSmith dataset</li>
+<li>Strong typing throughout, including LangSmith dataset schemas</li>
+<li>Clear separation based on evaluation type chosen upfront</li>
+</ol>
+<p>Let me think through this carefully and create a comprehensive brainstorm document.</p>
+<p>Key considerations:
+1. The evaluation type (chunk vs token) affects:
+   - Synthetic data generation (what ground truth looks like)
+   - Chunking (whether we need position tracking)
+   - Metrics (different formulas)
+   - LangSmith dataset schema</p>
+<ol>
+<li>For chunk-level:</li>
+<li>Ground truth = list of chunk IDs</li>
+<li>Simpler chunker interface</li>
+<li>
+<p>Metrics: recall, precision, F1 at chunk level</p>
+</li>
+<li>
+<p>For token-level (character spans):</p>
+</li>
+<li>Ground truth = character ranges in original documents</li>
+<li>Chunker needs to track positions</li>
+<li>Metrics: recall, precision, IoU based on character overlap</li>
+</ol>
+<p>Let me create a thorough brainstorm document covering:
+- High-level architecture
+- Type definitions
+- Interfaces for each component
+- LangSmith dataset schemas
+- Synthetic data generation approaches
+- Evaluation pipeline flow
+- Trade-offs and decisions</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-11-357Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-11-357Z" class="timestamp-link"><time datetime="2026-01-13T07:30:11.357Z" data-timestamp="2026-01-13T07:30:11.357Z">2026-01-13T07:30:11.357Z</time></a></div><div class="message-content"><div class="file-tool write-tool" data-tool-id="toolu_01PPSUiB9vByTzrY2wfp9ZSE">
+<div class="file-tool-header write-header"><span class="file-tool-icon">📝</span> Write <span class="file-tool-path">brainstorm.md</span></div>
+<div class="file-tool-fullpath">/home/user/rag_evaluation_framework/brainstorm.md</div>
+<div class="truncatable"><div class="truncatable-content"><pre class="file-content"># RAG Evaluation Framework - Architecture Brainstorm
+
+## Core Insight: Evaluation Type as First-Class Concept
+
+The evaluation type (chunk-level vs token-level) should be a **foundational choice** that shapes the entire pipeline, not an afterthought. This means:
+
+1. Different LangSmith dataset schemas
+2. Different synthetic data generation strategies
+3. Different chunker interfaces (or adapters)
+4. Different metric implementations
+5. Strong typing that makes incompatible combinations impossible
+
+---
+
+## Two Evaluation Paradigms
+
+### Chunk-Level Evaluation
+- **Question**: &#34;Did we retrieve the right chunks?&#34;
+- **Ground truth**: List of chunk IDs that are relevant
+- **Metric basis**: Set intersection of chunk IDs
+- **Simpler**, but binary (chunk is relevant or not)
+
+### Token-Level Evaluation (Character Spans)
+- **Question**: &#34;Did we retrieve the right *content*?&#34;
+- **Ground truth**: Character ranges in source documents
+- **Metric basis**: Character overlap between spans
+- **More granular**, captures partial relevance
+
+---
+
+## Proposed Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        TEXT CORPUS                               │
+│                  (folder of markdown files)                      │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────┐
+              │   CHOOSE EVALUATION TYPE      │
+              │  (chunk-level | token-level)  │
+              └───────────────────────────────┘
+                              │
+           ┌──────────────────┴──────────────────┐
+           ▼                                     ▼
+┌─────────────────────┐               ┌─────────────────────┐
+│  CHUNK-LEVEL PATH   │               │  TOKEN-LEVEL PATH   │
+└─────────────────────┘               └─────────────────────┘
+           │                                     │
+           ▼                                     ▼
+┌─────────────────────┐               ┌─────────────────────┐
+│ SyntheticDataGen    │               │ SyntheticDataGen    │
+│ (ChunkLevel)        │               │ (TokenLevel)        │
+│                     │               │                     │
+│ Output:             │               │ Output:             │
+│ - query             │               │ - query             │
+│ - relevant_chunk_ids│               │ - relevant_spans    │
+│                     │               │   (doc_id, start,   │
+│                     │               │    end, text)       │
+└─────────────────────┘               └─────────────────────┘
+           │                                     │
+           ▼                                     ▼
+┌─────────────────────┐               ┌─────────────────────┐
+│ LangSmith Dataset   │               │ LangSmith Dataset   │
+│ (ChunkLevelSchema)  │               │ (TokenLevelSchema)  │
+└─────────────────────┘               └─────────────────────┘
+           │                                     │
+           ▼                                     ▼
+┌─────────────────────┐               ┌─────────────────────┐
+│ Evaluation          │               │ Evaluation          │
+│ (ChunkLevel)        │               │ (TokenLevel)        │
+│                     │               │                     │
+│ Uses:               │               │ Uses:               │
+│ - Chunker           │               │ - PositionAware     │
+│ - Embedder          │               │   Chunker           │
+│ - VectorStore       │               │ - Embedder          │
+│ - Reranker          │               │ - VectorStore       │
+│                     │               │ - Reranker          │
+│ Metrics:            │               │                     │
+│ - ChunkRecall       │               │ Metrics:            │
+│ - ChunkPrecision    │               │ - SpanRecall        │
+│ - ChunkF1           │               │ - SpanPrecision     │
+└─────────────────────┘               │ - SpanIoU           │
+                                      └─────────────────────┘
+```
+
+---
+
+## Type Definitions
+
+### Core Types (Shared)
+
+```python
+from typing import TypedDict, Literal, List, Optional
+from dataclasses import dataclass
+from pathlib import Path
+
+EvaluationType = Literal[&#34;chunk-level&#34;, &#34;token-level&#34;]
+
+@dataclass
+class Document:
+    &#34;&#34;&#34;A source document from the corpus.&#34;&#34;&#34;
+    id: str
+    path: Path
+    content: str
+
+@dataclass
+class Corpus:
+    &#34;&#34;&#34;Collection of documents to evaluate against.&#34;&#34;&#34;
+    documents: List[Document]
+    base_path: Path
+
+    @classmethod
+    def from_folder(cls, folder: Path, glob: str = &#34;**/*.md&#34;) -&gt; &#34;Corpus&#34;:
+        &#34;&#34;&#34;Load all markdown files from a folder.&#34;&#34;&#34;
+        ...
+```
+
+### Chunk-Level Types
+
+```python
+@dataclass
+class Chunk:
+    &#34;&#34;&#34;A chunk with ID but no position tracking.&#34;&#34;&#34;
+    id: str  # hash of content or composite key
+    content: str
+    doc_id: str
+    metadata: dict = field(default_factory=dict)
+
+class ChunkLevelGroundTruth(TypedDict):
+    &#34;&#34;&#34;Ground truth for chunk-level evaluation.&#34;&#34;&#34;
+    query: str
+    relevant_chunk_ids: List[str]
+
+class ChunkLevelDatasetExample(TypedDict):
+    &#34;&#34;&#34;LangSmith dataset example for chunk-level.&#34;&#34;&#34;
+    inputs: dict  # {&#34;query&#34;: str}
+    outputs: dict  # {&#34;relevant_chunk_ids&#34;: List[str]}
+
+class ChunkLevelRunOutput(TypedDict):
+    &#34;&#34;&#34;Output from retrieval pipeline for chunk-level.&#34;&#34;&#34;
+    retrieved_chunk_ids: List[str]
+```
+
+### Token-Level Types (Character Spans)
+
+```python
+@dataclass
+class CharacterSpan:
+    &#34;&#34;&#34;A span of characters in a source document.&#34;&#34;&#34;
+    doc_id: str
+    start: int  # inclusive
+    end: int    # exclusive
+    text: str   # the actual text (for convenience/validation)
+
+    def overlaps(self, other: &#34;CharacterSpan&#34;) -&gt; bool:
+        &#34;&#34;&#34;Check if two spans overlap.&#34;&#34;&#34;
+        if self.doc_id != other.doc_id:
+            return False
+        return self.start &lt; other.end and other.start &lt; self.end
+
+    def overlap_chars(self, other: &#34;CharacterSpan&#34;) -&gt; int:
+        &#34;&#34;&#34;Calculate character overlap.&#34;&#34;&#34;
+        if not self.overlaps(other):
+            return 0
+        return min(self.end, other.end) - max(self.start, other.start)
+
+@dataclass
+class PositionAwareChunk:
+    &#34;&#34;&#34;A chunk that knows its position in the source document.&#34;&#34;&#34;
+    id: str
+    content: str
+    doc_id: str
+    start: int
+    end: int
+    metadata: dict = field(default_factory=dict)
+
+    def to_span(self) -&gt; CharacterSpan:
+        return CharacterSpan(
+            doc_id=self.doc_id,
+            start=self.start,
+            end=self.end,
+            text=self.content
+        )
+
+class TokenLevelGroundTruth(TypedDict):
+    &#34;&#34;&#34;Ground truth for token-level evaluation.&#34;&#34;&#34;
+    query: str
+    relevant_spans: List[dict]  # List of {doc_id, start, end, text}
+
+class TokenLevelDatasetExample(TypedDict):
+    &#34;&#34;&#34;LangSmith dataset example for token-level.&#34;&#34;&#34;
+    inputs: dict  # {&#34;query&#34;: str}
+    outputs: dict  # {&#34;relevant_spans&#34;: List[{doc_id, start, end, text}]}
+
+class TokenLevelRunOutput(TypedDict):
+    &#34;&#34;&#34;Output from retrieval pipeline for token-level.&#34;&#34;&#34;
+    retrieved_spans: List[dict]  # List of {doc_id, start, end, text}
+```
+
+---
+
+## Interface Definitions
+
+### Chunker Interfaces
+
+```python
+from abc import ABC, abstractmethod
+from typing import List, Protocol
+
+class Chunker(ABC):
+    &#34;&#34;&#34;Base chunker - returns chunks without position info.&#34;&#34;&#34;
+
+    @abstractmethod
+    def chunk(self, text: str) -&gt; List[str]:
+        &#34;&#34;&#34;Split text into chunks.&#34;&#34;&#34;
+        ...
+
+class PositionAwareChunker(ABC):
+    &#34;&#34;&#34;Chunker that tracks character positions.&#34;&#34;&#34;
+
+    @abstractmethod
+    def chunk_with_positions(self, doc: Document) -&gt; List[PositionAwareChunk]:
+        &#34;&#34;&#34;Split document into position-aware chunks.&#34;&#34;&#34;
+        ...
+
+# Adapter to make any Chunker position-aware
+class ChunkerPositionAdapter(PositionAwareChunker):
+    &#34;&#34;&#34;Wraps a regular Chunker to track positions.&#34;&#34;&#34;
+
+    def __init__(self, chunker: Chunker):
+        self.chunker = chunker
+
+    def chunk_with_positions(self, doc: Document) -&gt; List[PositionAwareChunk]:
+        chunks = self.chunker.chunk(doc.content)
+        result = []
+        current_pos = 0
+
+        for i, chunk_text in enumerate(chunks):
+            # Find chunk in original text
+            start = doc.content.find(chunk_text, current_pos)
+            if start == -1:
+                # Fallback: chunk was modified (e.g., whitespace normalized)
+                # This is a limitation - may need smarter matching
+                start = current_pos
+            end = start + len(chunk_text)
+
+            result.append(PositionAwareChunk(
+                id=self._generate_id(doc.id, chunk_text),
+                content=chunk_text,
+                doc_id=doc.id,
+                start=start,
+                end=end,
+            ))
+            current_pos = end
+
+        return result
+
+    def _generate_id(self, doc_id: str, content: str) -&gt; str:
+        import hashlib
+        hash_input = f&#34;{doc_id}:{content}&#34;
+        return hashlib.sha256(hash_input.encode()).hexdigest()[:12]
+```
+
+**Open Question**: Should we require ALL chunkers to be position-aware, or use the adapter pattern?
+
+Option A: Single interface, always position-aware
+- Simpler mental model
+- All implementations must track positions
+- Could be annoying for simple use cases
+
+Option B: Two interfaces + adapter (shown above)
+- More flexible
+- Adapter handles position tracking automatically
+- Risk: adapter may fail with chunkers that modify text (normalization, etc.)
+
+**Recommendation**: Option B with clear documentation about adapter limitations.
+
+---
+
+### Synthetic Data Generation
+
+```python
+from abc import ABC, abstractmethod
+from typing import Union, overload
+
+class SyntheticDataGenerator(ABC):
+    &#34;&#34;&#34;Base class for synthetic data generation.&#34;&#34;&#34;
+
+    def __init__(self, llm_client, corpus: Corpus):
+        self.llm = llm_client
+        self.corpus = corpus
+
+class ChunkLevelDataGenerator(SyntheticDataGenerator):
+    &#34;&#34;&#34;Generate synthetic QA pairs with chunk-level ground truth.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        llm_client,
+        corpus: Corpus,
+        chunker: Chunker,  # Need to chunk first to get chunk IDs
+    ):
+        super().__init__(llm_client, corpus)
+        self.chunker = chunker
+        self._chunk_index: Dict[str, Chunk] = {}  # chunk_id -&gt; Chunk
+
+    def generate(
+        self,
+        queries_per_doc: int = 5,
+        upload_to_langsmith: bool = True,
+        dataset_name: Optional[str] = None,
+    ) -&gt; List[ChunkLevelGroundTruth]:
+        &#34;&#34;&#34;
+        Generate synthetic queries with relevant chunk IDs.
+
+        Process:
+        1. Chunk all documents, build chunk index
+        2. For each document, generate queries using LLM
+        3. For each query, identify relevant chunks (LLM or embedding similarity)
+        4. Return/upload ground truth pairs
+        &#34;&#34;&#34;
+        ...
+
+class TokenLevelDataGenerator(SyntheticDataGenerator):
+    &#34;&#34;&#34;Generate synthetic QA pairs with character span ground truth.&#34;&#34;&#34;
+
+    def generate(
+        self,
+        queries_per_doc: int = 5,
+        upload_to_langsmith: bool = True,
+        dataset_name: Optional[str] = None,
+    ) -&gt; List[TokenLevelGroundTruth]:
+        &#34;&#34;&#34;
+        Generate synthetic queries with relevant character spans.
+
+        Process:
+        1. For each document, generate queries using LLM
+        2. For each query, ask LLM to extract relevant excerpts
+        3. Find character positions of excerpts in source document
+        4. Return/upload ground truth pairs
+
+        Note: No pre-chunking needed! Ground truth is excerpt positions,
+        independent of how we chunk at evaluation time.
+        &#34;&#34;&#34;
+        ...
+```
+
+**Key Insight**: Token-level synthetic data generation is **chunker-independent**. We generate relevant excerpts directly from documents. This means:
+- Same ground truth dataset works with ANY chunking strategy
+- Can fairly compare different chunkers against same baseline
+- This is a major advantage of token-level evaluation!
+
+For chunk-level, we must chunk first, which means:
+- Ground truth is tied to a specific chunking strategy
+- Changing chunkers requires regenerating ground truth
+- Less fair for chunker comparison
+
+---
+
+### Evaluation Classes
+
+```python
+from typing import Generic, TypeVar, Union
+from dataclasses import dataclass
+
+GT = TypeVar(&#39;GT&#39;, ChunkLevelGroundTruth, TokenLevelGroundTruth)
+
+@dataclass
+class EvaluationResult:
+    &#34;&#34;&#34;Results from an evaluation run.&#34;&#34;&#34;
+    metrics: Dict[str, float]
+    experiment_url: Optional[str]
+    raw_results: Any  # Langsmith results
+
+class BaseEvaluation(ABC, Generic[GT]):
+    &#34;&#34;&#34;Base evaluation class.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        corpus: Corpus,
+        langsmith_dataset_name: str,
+    ):
+        self.corpus = corpus
+        self.langsmith_dataset_name = langsmith_dataset_name
+
+class ChunkLevelEvaluation(BaseEvaluation[ChunkLevelGroundTruth]):
+    &#34;&#34;&#34;Evaluation using chunk-level metrics.&#34;&#34;&#34;
+
+    def run(
+        self,
+        chunker: Chunker,
+        embedder: Embedder,
+        vector_store: VectorStore,
+        k: int = 5,
+        reranker: Optional[Reranker] = None,
+        metrics: Optional[List[ChunkLevelMetric]] = None,
+    ) -&gt; EvaluationResult:
+        &#34;&#34;&#34;
+        Run chunk-level evaluation.
+
+        Pipeline:
+        1. Chunk corpus using chunker
+        2. Generate chunk IDs (content hash)
+        3. Embed and index chunks
+        4. For each query in dataset:
+           - Retrieve top-k chunks
+           - Compare retrieved chunk IDs vs ground truth chunk IDs
+        5. Compute metrics (recall, precision, F1)
+        &#34;&#34;&#34;
+        ...
+
+class TokenLevelEvaluation(BaseEvaluation[TokenLevelGroundTruth]):
+    &#34;&#34;&#34;Evaluation using token-level (character span) metrics.&#34;&#34;&#34;
+
+    def run(
+        self,
+        chunker: Union[Chunker, PositionAwareChunker],
+        embedder: Embedder,
+        vector_store: VectorStore,
+        k: int = 5,
+        reranker: Optional[Reranker] = None,
+        metrics: Optional[List[TokenLevelMetric]] = None,
+    ) -&gt; EvaluationResult:
+        &#34;&#34;&#34;
+        Run token-level evaluation.
+
+        Pipeline:
+        1. Chunk corpus using chunker (wrapped with PositionAdapter if needed)
+        2. Track chunk positions in source documents
+        3. Embed and index chunks
+        4. For each query in dataset:
+           - Retrieve top-k chunks
+           - Convert chunks to character spans
+           - Compare retrieved spans vs ground truth spans (overlap)
+        5. Compute metrics (span recall, precision, IoU)
+        &#34;&#34;&#34;
+        # Wrap chunker if needed
+        if isinstance(chunker, Chunker):
+            chunker = ChunkerPositionAdapter(chunker)
+        ...
+```
+
+---
+
+### Metrics
+
+```python
+from abc import ABC, abstractmethod
+
+class ChunkLevelMetric(ABC):
+    &#34;&#34;&#34;Metric for chunk-level evaluation.&#34;&#34;&#34;
+
+    @abstractmethod
+    def calculate(
+        self,
+        retrieved_chunk_ids: List[str],
+        ground_truth_chunk_ids: List[str]
+    ) -&gt; float:
+        ...
+
+class ChunkRecall(ChunkLevelMetric):
+    def calculate(self, retrieved: List[str], ground_truth: List[str]) -&gt; float:
+        if not ground_truth:
+            return 0.0
+        retrieved_set = set(retrieved)
+        ground_truth_set = set(ground_truth)
+        return len(retrieved_set &amp; ground_truth_set) / len(ground_truth_set)
+
+class ChunkPrecision(ChunkLevelMetric):
+    def calculate(self, retrieved: List[str], ground_truth: List[str]) -&gt; float:
+        if not retrieved:
+            return 0.0
+        retrieved_set = set(retrieved)
+        ground_truth_set = set(ground_truth)
+        return len(retrieved_set &amp; ground_truth_set) / len(retrieved_set)
+
+class ChunkF1(ChunkLevelMetric):
+    def calculate(self, retrieved: List[str], ground_truth: List[str]) -&gt; float:
+        recall = ChunkRecall().calculate(retrieved, ground_truth)
+        precision = ChunkPrecision().calculate(retrieved, ground_truth)
+        if recall + precision == 0:
+            return 0.0
+        return 2 * (precision * recall) / (precision + recall)
+
+
+class TokenLevelMetric(ABC):
+    &#34;&#34;&#34;Metric for token-level (character span) evaluation.&#34;&#34;&#34;
+
+    @abstractmethod
+    def calculate(
+        self,
+        retrieved_spans: List[CharacterSpan],
+        ground_truth_spans: List[CharacterSpan]
+    ) -&gt; float:
+        ...
+
+class SpanRecall(TokenLevelMetric):
+    &#34;&#34;&#34;What fraction of ground truth characters were retrieved?&#34;&#34;&#34;
+
+    def calculate(
+        self,
+        retrieved: List[CharacterSpan],
+        ground_truth: List[CharacterSpan]
+    ) -&gt; float:
+        if not ground_truth:
+            return 0.0
+
+        total_gt_chars = sum(span.end - span.start for span in ground_truth)
+
+        # Calculate overlap
+        overlap_chars = 0
+        for gt_span in ground_truth:
+            for ret_span in retrieved:
+                overlap_chars += gt_span.overlap_chars(ret_span)
+
+        # Note: Need to handle overlapping retrieved spans (dedup)
+        # This is simplified - real implementation needs interval merging
+        return min(overlap_chars / total_gt_chars, 1.0)
+
+class SpanPrecision(TokenLevelMetric):
+    &#34;&#34;&#34;What fraction of retrieved characters were relevant?&#34;&#34;&#34;
+
+    def calculate(
+        self,
+        retrieved: List[CharacterSpan],
+        ground_truth: List[CharacterSpan]
+    ) -&gt; float:
+        if not retrieved:
+            return 0.0
+
+        total_ret_chars = sum(span.end - span.start for span in retrieved)
+
+        overlap_chars = 0
+        for ret_span in retrieved:
+            for gt_span in ground_truth:
+                overlap_chars += ret_span.overlap_chars(gt_span)
+
+        return min(overlap_chars / total_ret_chars, 1.0)
+
+class SpanIoU(TokenLevelMetric):
+    &#34;&#34;&#34;Intersection over Union of character spans.&#34;&#34;&#34;
+
+    def calculate(
+        self,
+        retrieved: List[CharacterSpan],
+        ground_truth: List[CharacterSpan]
+    ) -&gt; float:
+        if not retrieved and not ground_truth:
+            return 1.0
+        if not retrieved or not ground_truth:
+            return 0.0
+
+        # Need proper interval arithmetic here
+        # Union = total unique characters covered by either
+        # Intersection = characters covered by both
+        ...
+```
+
+---
+
+## LangSmith Dataset Schemas
+
+### Chunk-Level Dataset
+
+```json
+{
+  &#34;name&#34;: &#34;rag-eval-chunk-level-v1&#34;,
+  &#34;description&#34;: &#34;Ground truth for chunk-level RAG evaluation&#34;,
+  &#34;example_schema&#34;: {
+    &#34;inputs&#34;: {
+      &#34;query&#34;: &#34;string&#34;
+    },
+    &#34;outputs&#34;: {
+      &#34;relevant_chunk_ids&#34;: [&#34;string&#34;],
+      &#34;metadata&#34;: {
+        &#34;source_docs&#34;: [&#34;string&#34;],
+        &#34;generation_model&#34;: &#34;string&#34;
+      }
+    }
+  }
+}
+```
+
+Example:
+```json
+{
+  &#34;inputs&#34;: {&#34;query&#34;: &#34;What are the benefits of RAG?&#34;},
+  &#34;outputs&#34;: {
+    &#34;relevant_chunk_ids&#34;: [&#34;a3f2b1c8&#34;, &#34;7d9e4f2a&#34;, &#34;1b3c5d7e&#34;],
+    &#34;metadata&#34;: {
+      &#34;source_docs&#34;: [&#34;rag_overview.md&#34;],
+      &#34;generation_model&#34;: &#34;gpt-4&#34;
+    }
+  }
+}
+```
+
+### Token-Level Dataset
+
+```json
+{
+  &#34;name&#34;: &#34;rag-eval-token-level-v1&#34;,
+  &#34;description&#34;: &#34;Ground truth for token-level RAG evaluation (character spans)&#34;,
+  &#34;example_schema&#34;: {
+    &#34;inputs&#34;: {
+      &#34;query&#34;: &#34;string&#34;
+    },
+    &#34;outputs&#34;: {
+      &#34;relevant_spans&#34;: [
+        {
+          &#34;doc_id&#34;: &#34;string&#34;,
+          &#34;start&#34;: &#34;integer&#34;,
+          &#34;end&#34;: &#34;integer&#34;,
+          &#34;text&#34;: &#34;string&#34;
+        }
+      ],
+      &#34;metadata&#34;: {
+        &#34;generation_model&#34;: &#34;string&#34;
+      }
+    }
+  }
+}
+```
+
+Example:
+```json
+{
+  &#34;inputs&#34;: {&#34;query&#34;: &#34;What are the benefits of RAG?&#34;},
+  &#34;outputs&#34;: {
+    &#34;relevant_spans&#34;: [
+      {
+        &#34;doc_id&#34;: &#34;rag_overview.md&#34;,
+        &#34;start&#34;: 1520,
+        &#34;end&#34;: 1847,
+        &#34;text&#34;: &#34;RAG combines the benefits of retrieval systems with generative models...&#34;
+      },
+      {
+        &#34;doc_id&#34;: &#34;rag_overview.md&#34;,
+        &#34;start&#34;: 2103,
+        &#34;end&#34;: 2298,
+        &#34;text&#34;: &#34;Key advantages include reduced hallucination and access to current information...&#34;
+      }
+    ],
+    &#34;metadata&#34;: {
+      &#34;generation_model&#34;: &#34;gpt-4&#34;
+    }
+  }
+}
+```
+
+---
+
+## User-Facing API
+
+### Option 1: Factory Pattern
+
+```python
+from rag_evaluation_framework import create_evaluation, EvaluationType
+
+# Chunk-level
+eval = create_evaluation(
+    eval_type=&#34;chunk-level&#34;,
+    corpus_path=&#34;./knowledge_base&#34;,
+    langsmith_dataset=&#34;my-dataset&#34;,
+)
+
+# Token-level
+eval = create_evaluation(
+    eval_type=&#34;token-level&#34;,
+    corpus_path=&#34;./knowledge_base&#34;,
+    langsmith_dataset=&#34;my-dataset&#34;,
+)
+
+# Same run() interface
+results = eval.run(
+    chunker=RecursiveCharacterChunker(chunk_size=200),
+    embedder=OpenAIEmbedder(),
+    vector_store=ChromaVectorStore(),
+    k=5,
+)
+```
+
+### Option 2: Explicit Classes
+
+```python
+from rag_evaluation_framework import (
+    ChunkLevelEvaluation,
+    TokenLevelEvaluation,
+    Corpus,
+)
+
+corpus = Corpus.from_folder(&#34;./knowledge_base&#34;)
+
+# Chunk-level
+eval = ChunkLevelEvaluation(
+    corpus=corpus,
+    langsmith_dataset_name=&#34;my-chunk-dataset&#34;,
+)
+
+# Token-level
+eval = TokenLevelEvaluation(
+    corpus=corpus,
+    langsmith_dataset_name=&#34;my-token-dataset&#34;,
+)
+```
+
+### Option 3: Single Class with Type Parameter
+
+```python
+from rag_evaluation_framework import Evaluation
+
+# Chunk-level
+eval = Evaluation[ChunkLevel](
+    corpus_path=&#34;./knowledge_base&#34;,
+    langsmith_dataset=&#34;my-dataset&#34;,
+)
+
+# Token-level
+eval = Evaluation[TokenLevel](
+    corpus_path=&#34;./knowledge_base&#34;,
+    langsmith_dataset=&#34;my-dataset&#34;,
+)
+```
+
+**Recommendation**: Option 2 (Explicit Classes)
+- Most Pythonic
+- Clear what you&#39;re getting
+- IDE autocomplete works well
+- Type checker catches mismatches
+
+---
+
+## Synthetic Data Generation API
+
+```python
+from rag_evaluation_framework import (
+    Corpus,
+    ChunkLevelDataGenerator,
+    TokenLevelDataGenerator,
+)
+
+corpus = Corpus.from_folder(&#34;./knowledge_base&#34;)
+
+# For chunk-level evaluation
+# Note: requires chunker because ground truth is chunk IDs
+chunk_gen = ChunkLevelDataGenerator(
+    llm_client=OpenAI(),
+    corpus=corpus,
+    chunker=RecursiveCharacterChunker(chunk_size=200),
+)
+
+chunk_dataset = chunk_gen.generate(
+    queries_per_doc=5,
+    upload_to_langsmith=True,
+    dataset_name=&#34;my-chunk-eval-dataset&#34;,
+)
+
+# For token-level evaluation
+# Note: NO chunker needed - ground truth is character spans
+token_gen = TokenLevelDataGenerator(
+    llm_client=OpenAI(),
+    corpus=corpus,
+)
+
+token_dataset = token_gen.generate(
+    queries_per_doc=5,
+    upload_to_langsmith=True,
+    dataset_name=&#34;my-token-eval-dataset&#34;,
+)
+```
+
+---
+
+## Full Workflow Example
+
+### Token-Level (Recommended for Chunker Comparison)
+
+```python
+from rag_evaluation_framework import (
+    Corpus,
+    TokenLevelDataGenerator,
+    TokenLevelEvaluation,
+    RecursiveCharacterChunker,
+    FixedTokenChunker,
+    SemanticChunker,
+    OpenAIEmbedder,
+    ChromaVectorStore,
+)
+from openai import OpenAI
+
+# 1. Load corpus
+corpus = Corpus.from_folder(&#34;./knowledge_base&#34;)
+
+# 2. Generate synthetic data (one-time)
+generator = TokenLevelDataGenerator(
+    llm_client=OpenAI(),
+    corpus=corpus,
+)
+generator.generate(
+    queries_per_doc=10,
+    upload_to_langsmith=True,
+    dataset_name=&#34;my-rag-eval-token-level&#34;,
+)
+
+# 3. Run evaluation with different chunkers
+eval = TokenLevelEvaluation(
+    corpus=corpus,
+    langsmith_dataset_name=&#34;my-rag-eval-token-level&#34;,
+)
+
+chunkers_to_test = [
+    RecursiveCharacterChunker(chunk_size=200, overlap=0),
+    RecursiveCharacterChunker(chunk_size=200, overlap=50),
+    RecursiveCharacterChunker(chunk_size=500, overlap=0),
+    FixedTokenChunker(tokens=100),
+    SemanticChunker(embedder=OpenAIEmbedder()),
+]
+
+results = []
+for chunker in chunkers_to_test:
+    result = eval.run(
+        chunker=chunker,
+        embedder=OpenAIEmbedder(),
+        vector_store=ChromaVectorStore(),
+        k=5,
+    )
+    results.append(result)
+    print(f&#34;{chunker}: Recall={result.metrics[&#39;span_recall&#39;]:.3f}&#34;)
+```
+
+### Chunk-Level (Simpler, but Chunker-Dependent Ground Truth)
+
+```python
+from rag_evaluation_framework import (
+    Corpus,
+    ChunkLevelDataGenerator,
+    ChunkLevelEvaluation,
+    RecursiveCharacterChunker,
+    OpenAIEmbedder,
+    ChromaVectorStore,
+)
+
+# 1. Load corpus
+corpus = Corpus.from_folder(&#34;./knowledge_base&#34;)
+
+# 2. Choose chunker (this is fixed for this evaluation)
+chunker = RecursiveCharacterChunker(chunk_size=200)
+
+# 3. Generate synthetic data with this chunker
+generator = ChunkLevelDataGenerator(
+    llm_client=OpenAI(),
+    corpus=corpus,
+    chunker=chunker,  # Required!
+)
+generator.generate(
+    queries_per_doc=10,
+    upload_to_langsmith=True,
+    dataset_name=&#34;my-rag-eval-chunk-level&#34;,
+)
+
+# 4. Run evaluation (must use same chunker!)
+eval = ChunkLevelEvaluation(
+    corpus=corpus,
+    langsmith_dataset_name=&#34;my-rag-eval-chunk-level&#34;,
+)
+
+result = eval.run(
+    chunker=chunker,  # Must match!
+    embedder=OpenAIEmbedder(),
+    vector_store=ChromaVectorStore(),
+    k=5,
+)
+```
+
+---
+
+## Open Questions
+
+### 1. Chunk ID Stability for Chunk-Level Evaluation
+
+When using chunk-level evaluation, how do we ensure chunk IDs are stable?
+
+Options:
+- **Content hash**: `sha256(text)[:12]` - deterministic but changes if text changes
+- **Position hash**: `sha256(doc_id + start + end)[:12]` - stable to content edits elsewhere
+- **Composite key**: `{doc_id}:{chunk_index}` - simple but order-dependent
+
+**Recommendation**: Content hash for most cases. Document that regenerating dataset is needed if corpus changes.
+
+### 2. Handling Overlapping Spans in Token-Level Metrics
+
+When chunks overlap (common with sliding window), how do we count characters?
+
+```
+Chunk 1: [----chars 0-100----]
+Chunk 2:        [----chars 50-150----]
+Ground truth:   [--chars 60-90--]
+```
+
+Do we count chars 60-90 once or twice?
+
+**Recommendation**: Merge overlapping retrieved spans before comparison. Count each character at most once.
+
+### 3. Cross-Document Ground Truth
+
+Can a single query have relevant spans from multiple documents?
+
+```json
+{
+  &#34;query&#34;: &#34;Compare RAG and fine-tuning&#34;,
+  &#34;relevant_spans&#34;: [
+    {&#34;doc_id&#34;: &#34;rag.md&#34;, &#34;start&#34;: 100, &#34;end&#34;: 200},
+    {&#34;doc_id&#34;: &#34;fine_tuning.md&#34;, &#34;start&#34;: 50, &#34;end&#34;: 150}
+  ]
+}
+```
+
+**Recommendation**: Yes, support this. It&#39;s realistic and the span-based approach handles it naturally.
+
+### 4. VectorStore Position Tracking
+
+For token-level evaluation, the VectorStore needs to return position info. Options:
+
+A) Store positions in metadata, return with results
+B) Maintain separate chunk registry, look up after retrieval
+C) Return chunk IDs, look up positions from registry
+
+**Recommendation**: Option A - Store in metadata. Most vector stores support this.
+
+```python
+class VectorStore(ABC):
+    @abstractmethod
+    def add(self, chunks: List[PositionAwareChunk], embeddings: List[List[float]]):
+        &#34;&#34;&#34;Add chunks with their positions stored in metadata.&#34;&#34;&#34;
+        ...
+
+    @abstractmethod
+    def search(self, query_embedding: List[float], k: int) -&gt; List[PositionAwareChunk]:
+        &#34;&#34;&#34;Return chunks with position info.&#34;&#34;&#34;
+        ...
+```
+
+### 5. Adapter Failure Cases
+
+The `ChunkerPositionAdapter` may fail when:
+- Chunker normalizes whitespace
+- Chunker adds/removes characters
+- Chunker reorders content
+
+How to handle?
+
+Options:
+- Warn user, skip problematic chunks
+- Use fuzzy matching (slower)
+- Require explicit position-aware chunkers
+
+**Recommendation**: Warn and skip, with clear documentation. Most chunkers preserve text.
+
+---
+
+## Summary: Chunk-Level vs Token-Level
+
+| Aspect | Chunk-Level | Token-Level |
+|--------|-------------|-------------|
+| Ground truth format | Chunk IDs | Character spans |
+| Chunker for data gen | Required | Not needed |
+| Compare chunkers fairly | No (tied to GT chunker) | Yes (chunker-independent GT) |
+| Implementation complexity | Lower | Higher |
+| Metric granularity | Binary (chunk relevant or not) | Continuous (% overlap) |
+| Interface changes needed | None | Chunker position tracking |
+| Best for | Quick iteration, simple cases | Research, chunker comparison |
+
+**Recommendation**:
+- Start with **Token-Level** as the primary approach - more principled, better for comparing chunking strategies
+- Offer **Chunk-Level** as a simpler alternative when users don&#39;t need fine-grained metrics
+
+---
+
+## Next Steps
+
+1. **Decide** on the API style (Option 1/2/3 above)
+2. **Define** final type definitions in `types.py`
+3. **Implement** `PositionAwareChunker` interface and adapter
+4. **Implement** `TokenLevelDataGenerator`
+5. **Implement** span-based metrics
+6. **Implement** `TokenLevelEvaluation.run()`
+7. **Update** VectorStore interface for position metadata
+8. **Write** comprehensive tests
+9. **Document** with examples
+</pre></div><button class="expand-btn">Show more</button></div>
+</div></div></div>
+<div class="message tool-reply" id="msg-2026-01-13T07-30-11-658Z"><div class="message-header"><span class="role-label">Tool reply</span><a href="#msg-2026-01-13T07-30-11-658Z" class="timestamp-link"><time datetime="2026-01-13T07:30:11.658Z" data-timestamp="2026-01-13T07:30:11.658Z">2026-01-13T07:30:11.658Z</time></a></div><div class="message-content"><div class="tool-result"><div class="truncatable"><div class="truncatable-content"><pre>File created successfully at: /home/user/rag_evaluation_framework/brainstorm.md</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-14-980Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-14-980Z" class="timestamp-link"><time datetime="2026-01-13T07:30:14.980Z" data-timestamp="2026-01-13T07:30:14.980Z">2026-01-13T07:30:14.980Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>I've created a comprehensive brainstorm document. Let me give the user a summary of the key points and ask for their feedback.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-22-938Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-22-938Z" class="timestamp-link"><time datetime="2026-01-13T07:30:22.938Z" data-timestamp="2026-01-13T07:30:22.938Z">2026-01-13T07:30:22.938Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>I've created <code>brainstorm.md</code> with a comprehensive analysis. Here are the key insights:</p>
+<h2>Main Takeaways</h2>
+<p><strong>Token-level evaluation is more principled for chunker comparison</strong> because:
+- Ground truth (character spans) is <strong>chunker-independent</strong>
+- Same dataset works with ANY chunking strategy
+- Can fairly compare different chunkers against the same baseline</p>
+<p><strong>Chunk-level has a fundamental limitation</strong>:
+- Ground truth is tied to specific chunk IDs
+- Changing chunkers requires regenerating the dataset
+- Can't fairly compare chunking strategies</p>
+<h2>Proposed Structure</h2>
+<pre><code>Corpus (markdown folder)
+    │
+    ├─→ TokenLevelDataGenerator (no chunker needed)
+    │       └─→ LangSmith: {query, relevant_spans: [{doc_id, start, end, text}]}
+    │
+    └─→ ChunkLevelDataGenerator (requires chunker)
+            └─→ LangSmith: {query, relevant_chunk_ids: [str]}
+</code></pre>
+<h2>Key Design Decisions Needed</h2>
+<ol>
+<li><strong>API style</strong> - Factory pattern, explicit classes, or generic class?</li>
+<li><strong>Chunker interface</strong> - Require position-awareness, or use adapter pattern?</li>
+<li><strong>VectorStore</strong> - Store positions in metadata, or separate registry?</li>
+</ol>
+<h2>My Recommendation</h2>
+<ul>
+<li>Make <strong>Token-Level</strong> the primary/recommended approach</li>
+<li>Offer <strong>Chunk-Level</strong> as simpler alternative</li>
+<li>Use <strong>explicit classes</strong> (<code>TokenLevelEvaluation</code>, <code>ChunkLevelEvaluation</code>)</li>
+<li>Use <strong>adapter pattern</strong> for chunkers (wrap existing chunkers automatically)</li>
+</ul>
+<p>Want me to dive deeper into any section, or shall we start refining specific interfaces?</p></div></div></div>
+<div class="message user" id="msg-2026-01-13T07-30-23-236Z"><div class="message-header"><span class="role-label">User</span><a href="#msg-2026-01-13T07-30-23-236Z" class="timestamp-link"><time datetime="2026-01-13T07:30:23.236Z" data-timestamp="2026-01-13T07:30:23.236Z">2026-01-13T07:30:23.236Z</time></a></div><div class="message-content">
+<div class="user-content"><p>Stop hook feedback:
+[~/.claude/stop-hook-git-check.sh]: There are untracked files in the repository. Please commit and push these changes to the remote branch.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-26-357Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-26-357Z" class="timestamp-link"><time datetime="2026-01-13T07:30:26.357Z" data-timestamp="2026-01-13T07:30:26.357Z">2026-01-13T07:30:26.357Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>The stop hook is telling me there are untracked files that need to be committed and pushed. Let me commit the brainstorm.md file I just created.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-26-794Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-26-794Z" class="timestamp-link"><time datetime="2026-01-13T07:30:26.794Z" data-timestamp="2026-01-13T07:30:26.794Z">2026-01-13T07:30:26.794Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>Let me commit and push the brainstorm file.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-27-753Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-27-753Z" class="timestamp-link"><time datetime="2026-01-13T07:30:27.753Z" data-timestamp="2026-01-13T07:30:27.753Z">2026-01-13T07:30:27.753Z</time></a></div><div class="message-content">
+<div class="tool-use bash-tool" data-tool-id="toolu_01GQR1xS9vu6aZG3PvXVVAaU">
+<div class="tool-header"><span class="tool-icon">$</span> Bash</div>
+<div class="tool-description">Check git status for untracked files</div><div class="truncatable"><div class="truncatable-content"><pre class="bash-command">git status</pre></div><button class="expand-btn">Show more</button></div>
+</div></div></div>
+<div class="message tool-reply" id="msg-2026-01-13T07-30-30-682Z"><div class="message-header"><span class="role-label">Tool reply</span><a href="#msg-2026-01-13T07-30-30-682Z" class="timestamp-link"><time datetime="2026-01-13T07:30:30.682Z" data-timestamp="2026-01-13T07:30:30.682Z">2026-01-13T07:30:30.682Z</time></a></div><div class="message-content"><div class="tool-result"><div class="truncatable"><div class="truncatable-content"><pre>On branch claude/review-and-plan-RiT3x
+Your branch is up to date with &#x27;origin/claude/review-and-plan-RiT3x&#x27;.
+
+Untracked files:
+  (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)
+	brainstorm.md
+
+nothing added to commit but untracked files present (use &quot;git add&quot; to track)</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-34-143Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-34-143Z" class="timestamp-link"><time datetime="2026-01-13T07:30:34.143Z" data-timestamp="2026-01-13T07:30:34.143Z">2026-01-13T07:30:34.143Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>I need to commit and push the brainstorm.md file. Let me do that now.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-36-731Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-36-731Z" class="timestamp-link"><time datetime="2026-01-13T07:30:36.731Z" data-timestamp="2026-01-13T07:30:36.731Z">2026-01-13T07:30:36.731Z</time></a></div><div class="message-content">
+<div class="tool-use bash-tool" data-tool-id="toolu_01LjsA62iHHkSTtTY7PNN6Va">
+<div class="tool-header"><span class="tool-icon">$</span> Bash</div>
+<div class="tool-description">Commit brainstorm.md file</div><div class="truncatable"><div class="truncatable-content"><pre class="bash-command">git add brainstorm.md &amp;&amp; git commit -m &#34;$(cat &lt;&lt;&#39;EOF&#39;
+Add architecture brainstorm for chunk-level vs token-level evaluation
+
+Comprehensive analysis of two evaluation paradigms:
+- Chunk-level: simpler but ground truth tied to specific chunker
+- Token-level (character spans): chunker-independent, better for comparison
+
+Includes type definitions, interface proposals, API options, and
+LangSmith dataset schemas for both approaches.
+EOF
+)&#34;</pre></div><button class="expand-btn">Show more</button></div>
+</div></div></div>
+<div class="message tool-reply" id="msg-2026-01-13T07-30-40-188Z"><div class="message-header"><span class="role-label">Tool reply</span><a href="#msg-2026-01-13T07-30-40-188Z" class="timestamp-link"><time datetime="2026-01-13T07:30:40.188Z" data-timestamp="2026-01-13T07:30:40.188Z">2026-01-13T07:30:40.188Z</time></a></div><div class="message-content"><div class="tool-result"><div class="truncatable"><div class="truncatable-content"><div class="commit-card"><a href="https://github.com/vinit-agr/rag_evaluation_framework/commit/c55ef6d"><span class="commit-card-hash">c55ef6d</span> Add architecture brainstorm for chunk-level vs token-level evaluation</a></div><pre>1 file changed, 990 insertions(+)
+ create mode 100644 brainstorm.md</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-43-447Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-43-447Z" class="timestamp-link"><time datetime="2026-01-13T07:30:43.447Z" data-timestamp="2026-01-13T07:30:43.447Z">2026-01-13T07:30:43.447Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>Good, now I need to push to the remote branch.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-43-963Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-43-963Z" class="timestamp-link"><time datetime="2026-01-13T07:30:43.963Z" data-timestamp="2026-01-13T07:30:43.963Z">2026-01-13T07:30:43.963Z</time></a></div><div class="message-content">
+<div class="tool-use bash-tool" data-tool-id="toolu_01EN4DW5NjYK8Ttxk7UnL3u7">
+<div class="tool-header"><span class="tool-icon">$</span> Bash</div>
+<div class="tool-description">Push commit to remote branch</div><div class="truncatable"><div class="truncatable-content"><pre class="bash-command">git push -u origin claude/review-and-plan-RiT3x</pre></div><button class="expand-btn">Show more</button></div>
+</div></div></div>
+<div class="message tool-reply" id="msg-2026-01-13T07-30-48-046Z"><div class="message-header"><span class="role-label">Tool reply</span><a href="#msg-2026-01-13T07-30-48-046Z" class="timestamp-link"><time datetime="2026-01-13T07:30:48.046Z" data-timestamp="2026-01-13T07:30:48.046Z">2026-01-13T07:30:48.046Z</time></a></div><div class="message-content"><div class="tool-result"><div class="truncatable"><div class="truncatable-content"><pre>branch &#x27;claude/review-and-plan-RiT3x&#x27; set up to track &#x27;origin/claude/review-and-plan-RiT3x&#x27;.
+To http://127.0.0.1:28520/git/vinit-agr/rag_evaluation_framework
+   6c2b600..c55ef6d  claude/review-and-plan-RiT3x -&gt; claude/review-and-plan-RiT3x</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-51-161Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-51-161Z" class="timestamp-link"><time datetime="2026-01-13T07:30:51.161Z" data-timestamp="2026-01-13T07:30:51.161Z">2026-01-13T07:30:51.161Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>The commit has been pushed. Now let me continue the conversation with the user about the brainstorm.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-13T07-30-51-772Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-13T07-30-51-772Z" class="timestamp-link"><time datetime="2026-01-13T07:30:51.772Z" data-timestamp="2026-01-13T07:30:51.772Z">2026-01-13T07:30:51.772Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>Done. Committed and pushed <code>brainstorm.md</code> to the branch.</p>
+<p>Want me to dive deeper into any section, or shall we start refining specific interfaces?</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-08-605Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-08-605Z" class="timestamp-link"><time datetime="2026-01-12T18:47:08.605Z" data-timestamp="2026-01-12T18:47:08.605Z">2026-01-12T18:47:08.605Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>The user is asking about "option A" in a "decision question" that was mentioned above. However, looking at the context provided, I don't see any decision question or "option A" mentioned. This seems to be referencing a previous conversation or document that I don't have access to in this context.</p>
+<p>Let me search the codebase to find any implementation plan or decision document that might contain this "option A" reference, since the recent commits mention "Add comprehensive implementation plan for RAG evaluation framework".</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-08-605Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-08-605Z" class="timestamp-link"><time datetime="2026-01-12T18:47:08.605Z" data-timestamp="2026-01-12T18:47:08.605Z">2026-01-12T18:47:08.605Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>I don't see the decision question you're referring to in the current context. Let me search for the implementation plan document that was recently added to find the "option A" you're asking about.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-08-605Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-08-605Z" class="timestamp-link"><time datetime="2026-01-12T18:47:08.605Z" data-timestamp="2026-01-12T18:47:08.605Z">2026-01-12T18:47:08.605Z</time></a></div><div class="message-content">
+<div class="tool-use" data-tool-id="toolu_01UDazaunvqnhSxedeeg3r15"><div class="tool-header"><span class="tool-icon">⚙</span> Glob</div><div class="truncatable"><div class="truncatable-content"><pre class="json">{
+  &#34;pattern&#34;: &#34;**/plan*&#34;
+}</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message tool-reply" id="msg-2026-01-12T18-47-09-245Z"><div class="message-header"><span class="role-label">Tool reply</span><a href="#msg-2026-01-12T18-47-09-245Z" class="timestamp-link"><time datetime="2026-01-12T18:47:09.245Z" data-timestamp="2026-01-12T18:47:09.245Z">2026-01-12T18:47:09.245Z</time></a></div><div class="message-content"><div class="tool-result"><div class="truncatable"><div class="truncatable-content"><pre>No files found</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-12-977Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-12-977Z" class="timestamp-link"><time datetime="2026-01-12T18:47:12.977Z" data-timestamp="2026-01-12T18:47:12.977Z">2026-01-12T18:47:12.977Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>Found it - there's an IMPLEMENTATION_PLAN.md. Let me read it to find the "option A" the user is asking about.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-13-318Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-13-318Z" class="timestamp-link"><time datetime="2026-01-12T18:47:13.318Z" data-timestamp="2026-01-12T18:47:13.318Z">2026-01-12T18:47:13.318Z</time></a></div><div class="message-content">
+<div class="tool-use" data-tool-id="toolu_019HgVV4Gs2HChefa76sR1qT"><div class="tool-header"><span class="tool-icon">⚙</span> Read</div><div class="truncatable"><div class="truncatable-content"><pre class="json">{
+  &#34;file_path&#34;: &#34;/home/user/rag_evaluation_framework/docs/IMPLEMENTATION_PLAN.md&#34;
+}</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message tool-reply" id="msg-2026-01-12T18-47-13-629Z"><div class="message-header"><span class="role-label">Tool reply</span><a href="#msg-2026-01-12T18-47-13-629Z" class="timestamp-link"><time datetime="2026-01-12T18:47:13.629Z" data-timestamp="2026-01-12T18:47:13.629Z">2026-01-12T18:47:13.629Z</time></a></div><div class="message-content"><div class="tool-result"><div class="truncatable"><div class="truncatable-content"><pre>     1→# RAG Evaluation Framework - Implementation Plan
+     2→
+     3→## Executive Summary
+     4→
+     5→This document outlines the implementation plan for completing the RAG Evaluation Framework, inspired by the [Chroma Chunking Evaluation Research](https://research.trychroma.com/evaluating-chunking) and the [chunking_evaluation library](https://github.com/brandonstarxel/chunking_evaluation). The framework aims to provide comprehensive RAG pipeline evaluation beyond just chunking, with full Langsmith integration.
+     6→
+     7→---
+     8→
+     9→## Current State Analysis
+    10→
+    11→### What&#x27;s Implemented
+    12→
+    13→| Component | Status | Notes |
+    14→|-----------|--------|-------|
+    15→| `Metrics` base class | **Complete** | Abstract base with Langsmith integration via `to_langsmith_evaluator()` |
+    16→| `ChunkLevelRecall` | **Partial** | `calculate()` implemented; missing `extract_*()` methods |
+    17→| `TokenLevelRecall` | **Empty** | Placeholder file only |
+    18→| `Chunker` base class | **Complete** | Abstract interface defined |
+    19→| `Embedder` base class | **Complete** | Abstract interface defined |
+    20→| `VectorStore` base class | **Complete** | Abstract interface defined |
+    21→| `Reranker` base class | **Complete** | Abstract interface defined |
+    22→| `ChromaVectorStore` | **Stubbed** | Methods return empty lists |
+    23→| `Evaluation` class | **Partial** | Init + validation only; `run()` is incomplete |
+    24→| `EvaluationConfig` | **Complete** | Pydantic model for config |
+    25→| `get_langsmith_evaluators` | **Complete** | Utility for batch metric conversion |
+    26→
+    27→### What&#x27;s Missing
+    28→
+    29→1. **Core Evaluation Pipeline** - The `Evaluation.run()` method needs full implementation
+    30→2. **Token-Level Metrics** - TokenLevelRecall, TokenLevelPrecision, TokenLevelIoU, PrecisionOmega
+    31→3. **Chunk-Level Metrics** - ChunkLevelPrecision, ChunkLevelF1
+    32→4. **Concrete Component Implementations** - Working chunkers, embedders, vector stores
+    33→5. **Synthetic Data Generation** - `synthetic_datagen/` module is empty
+    34→6. **Hyperparameter Sweep** - `sweep()` method documented but not implemented
+    35→
+    36→### Code Quality Issues to Fix
+    37→
+    38→1. **Type hint error** in `ChunkLevelRecall.calculate()` - line 5 has `ground_truth_chunk_ids: str` but should be `List[str]`
+    39→2. **Missing abstract methods** in `ChunkLevelRecall` - needs `extract_ground_truth_chunks_ids()` and `extract_retrieved_chunks_ids()`
+    40→3. **Empty `__init__.py` files** - Should export public interfaces
+    41→
+    42→---
+    43→
+    44→## Research Foundation: Chroma Chunking Evaluation
+    45→
+    46→### Token-Level Metrics (from Chroma Research)
+    47→
+    48→The Chroma team&#x27;s research introduces token-level evaluation metrics that provide more granular insight than chunk-level metrics:
+    49→
+    50→**Definitions:**
+    51→- `t_e` = set of tokens in all relevant excerpts (ground truth)
+    52→- `t_r` = set of tokens in retrieved chunks
+    53→
+    54→**Formulas:**
+    55→
+    56→```
+    57→Recall_q(C) = |t_e ∩ t_r| / |t_e|
+    58→```
+    59→Measures what fraction of relevant tokens are successfully retrieved.
+    60→
+    61→```
+    62→Precision_q(C) = |t_e ∩ t_r| / |t_r|
+    63→```
+    64→Measures what fraction of retrieved tokens are actually relevant.
+    65→
+    66→```
+    67→IoU_q(C) = |t_e ∩ t_r| / (|t_e| + |t_r| - |t_e ∩ t_r|)
+    68→```
+    69→Jaccard similarity - accounts for both missed relevant tokens and irrelevant retrieved tokens.
+    70→
+    71→```
+    72→F1 = 2 × (Precision × Recall) / (Precision + Recall)
+    73→```
+    74→Harmonic mean of precision and recall.
+    75→
+    76→### Key Insights from Research
+    77→
+    78→1. **Chunk size matters** - 200-token chunks with zero overlap performed well
+    79→2. **Overlap penalizes IoU** - Redundant tokens hurt efficiency metrics
+    80→3. **Semantic chunkers need consistent embeddings** - Use same embedding model for chunking and retrieval
+    81→4. **Token efficiency matters for LLMs** - Irrelevant tokens waste compute in downstream processing
+    82→
+    83→---
+    84→
+    85→## Implementation Phases
+    86→
+    87→### Phase 1: Foundation Fixes &amp; Core Metrics
+    88→
+    89→**Priority: HIGH**
+    90→
+    91→#### 1.1 Fix Existing Code Issues
+    92→
+    93→```python
+    94→# Fix ChunkLevelRecall type hint and add missing methods
+    95→class ChunkLevelRecall(Metrics):
+    96→    def calculate(self, retrieved_chunk_ids: List[str], ground_truth_chunk_ids: List[str]) -&gt; float:
+    97→        # ... existing implementation
+    98→
+    99→    def extract_ground_truth_chunks_ids(self, example: Optional[Example]) -&gt; List[str]:
+   100→        if example is None:
+   101→            return []
+   102→        return example.outputs.get(&quot;chunk_ids&quot;, [])
+   103→
+   104→    def extract_retrieved_chunks_ids(self, run: Run) -&gt; List[str]:
+   105→        if run.outputs is None:
+   106→            return []
+   107→        return run.outputs.get(&quot;retrieved_chunk_ids&quot;, [])
+   108→```
+   109→
+   110→#### 1.2 Implement ChunkLevelPrecision
+   111→
+   112→```python
+   113→class ChunkLevelPrecision(Metrics):
+   114→    def calculate(self, retrieved_chunk_ids: List[str], ground_truth_chunk_ids: List[str]) -&gt; float:
+   115→        if len(retrieved_chunk_ids) == 0:
+   116→            return 0.0
+   117→        retrieved_set = set(retrieved_chunk_ids)
+   118→        ground_truth_set = set(ground_truth_chunk_ids)
+   119→        return len(retrieved_set &amp; ground_truth_set) / len(retrieved_set)
+   120→```
+   121→
+   122→#### 1.3 Implement Token-Level Metrics
+   123→
+   124→**TokenLevelRecall:**
+   125→```python
+   126→class TokenLevelRecall(Metrics):
+   127→    def __init__(self, tokenizer: str = &quot;cl100k_base&quot;):
+   128→        self.tokenizer = tiktoken.get_encoding(tokenizer)
+   129→
+   130→    def calculate(self, retrieved_chunks: List[str], ground_truth_excerpts: List[str]) -&gt; float:
+   131→        retrieved_tokens = set()
+   132→        for chunk in retrieved_chunks:
+   133→            retrieved_tokens.update(self.tokenizer.encode(chunk))
+   134→
+   135→        ground_truth_tokens = set()
+   136→        for excerpt in ground_truth_excerpts:
+   137→            ground_truth_tokens.update(self.tokenizer.encode(excerpt))
+   138→
+   139→        if len(ground_truth_tokens) == 0:
+   140→            return 0.0
+   141→
+   142→        return len(retrieved_tokens &amp; ground_truth_tokens) / len(ground_truth_tokens)
+   143→```
+   144→
+   145→**TokenLevelPrecision, TokenLevelIoU, TokenLevelF1** - Similar pattern.
+   146→
+   147→**Design Decision Needed:** Should token-level metrics work with:
+   148→- A) Chunk IDs (requires chunk content lookup)
+   149→- B) Actual text content directly
+   150→- C) Both via configuration
+   151→
+   152→### Phase 2: Core Evaluation Pipeline
+   153→
+   154→**Priority: HIGH**
+   155→
+   156→#### 2.1 Complete Evaluation.run() Method
+   157→
+   158→```python
+   159→def run(
+   160→    self,
+   161→    chunker: Optional[Chunker] = None,
+   162→    embedder: Optional[Embedder] = None,
+   163→    vector_store: Optional[VectorStore] = None,
+   164→    k: int = 5,
+   165→    reranker: Optional[Reranker] = None,
+   166→    metrics: Optional[Dict[str, Metrics]] = None,
+   167→    config: Optional[EvaluationConfig] = None,
+   168→) -&gt; EvaluationResults:
+   169→    # 1. Load and chunk knowledge base documents
+   170→    documents = self._load_kb_documents()
+   171→    chunks = self._chunk_documents(documents, chunker)
+   172→
+   173→    # 2. Embed chunks and populate vector store
+   174→    self._populate_vector_store(chunks, embedder, vector_store)
+   175→
+   176→    # 3. Create retrieval function for Langsmith
+   177→    def retrieve(query: str) -&gt; Dict:
+   178→        results = vector_store.search(query, k)
+   179→        if reranker:
+   180→            results = reranker.rerank(results, query, k)
+   181→        return {&quot;retrieved_chunk_ids&quot;: results}
+   182→
+   183→    # 4. Convert metrics to Langsmith evaluators
+   184→    evaluators = get_langsmith_evaluators(metrics or self._default_metrics(), k)
+   185→
+   186→    # 5. Run Langsmith evaluation
+   187→    from langsmith import evaluate
+   188→    results = evaluate(
+   189→        target=retrieve,
+   190→        data=self.langsmith_dataset_name,
+   191→        evaluators=evaluators,
+   192→        experiment_prefix=config.experiment_name if config else None,
+   193→    )
+   194→
+   195→    return EvaluationResults(results)
+   196→```
+   197→
+   198→#### 2.2 Define EvaluationResults Class
+   199→
+   200→```python
+   201→@dataclass
+   202→class EvaluationResults:
+   203→    raw_results: Any  # Langsmith results object
+   204→    metrics_summary: Dict[str, float]
+   205→    experiment_url: str
+   206→    config: EvaluationConfig
+   207→
+   208→    def to_dataframe(self) -&gt; pd.DataFrame: ...
+   209→    def compare(self, other: &#x27;EvaluationResults&#x27;) -&gt; ComparisonReport: ...
+   210→```
+   211→
+   212→### Phase 3: Concrete Component Implementations
+   213→
+   214→**Priority: MEDIUM**
+   215→
+   216→#### 3.1 Chunker Implementations
+   217→
+   218→| Implementation | Description | Dependencies |
+   219→|----------------|-------------|--------------|
+   220→| `RecursiveCharacterChunker` | LangChain-style recursive splitting | None |
+   221→| `FixedTokenChunker` | Fixed token-size chunks | tiktoken |
+   222→| `SemanticChunker` | Embedding-based semantic boundaries | Embedder |
+   223→| `SentenceChunker` | Sentence boundary chunking | nltk/spacy |
+   224→
+   225→```python
+   226→class RecursiveCharacterChunker(Chunker):
+   227→    def __init__(self, chunk_size: int = 200, chunk_overlap: int = 0,
+   228→                 separators: List[str] = [&quot;\n\n&quot;, &quot;\n&quot;, &quot;.&quot;, &quot;?&quot;, &quot;!&quot;, &quot; &quot;]):
+   229→        self.chunk_size = chunk_size
+   230→        self.chunk_overlap = chunk_overlap
+   231→        self.separators = separators
+   232→
+   233→    def chunk(self, text: str) -&gt; List[str]:
+   234→        # Implementation
+   235→```
+   236→
+   237→#### 3.2 Embedder Implementations
+   238→
+   239→| Implementation | Description | Dependencies |
+   240→|----------------|-------------|--------------|
+   241→| `OpenAIEmbedder` | OpenAI text-embedding models | openai |
+   242→| `SentenceTransformerEmbedder` | HuggingFace sentence-transformers | sentence-transformers |
+   243→| `CohereEmbedder` | Cohere embed API | cohere |
+   244→
+   245→```python
+   246→class OpenAIEmbedder(Embedder):
+   247→    def __init__(self, model: str = &quot;text-embedding-3-small&quot;):
+   248→        self.model = model
+   249→        self.client = OpenAI()
+   250→
+   251→    def embed_docs(self, docs: List[str]) -&gt; List[List[float]]:
+   252→        response = self.client.embeddings.create(input=docs, model=self.model)
+   253→        return [e.embedding for e in response.data]
+   254→```
+   255→
+   256→#### 3.3 VectorStore Implementations
+   257→
+   258→| Implementation | Description | Dependencies |
+   259→|----------------|-------------|--------------|
+   260→| `ChromaVectorStore` | ChromaDB integration | chromadb |
+   261→| `QdrantVectorStore` | Qdrant integration | qdrant-client |
+   262→| `InMemoryVectorStore` | Simple numpy-based store | numpy |
+   263→
+   264→#### 3.4 Reranker Implementations
+   265→
+   266→| Implementation | Description | Dependencies |
+   267→|----------------|-------------|--------------|
+   268→| `CohereReranker` | Cohere Rerank API | cohere |
+   269→| `CrossEncoderReranker` | HuggingFace cross-encoder | sentence-transformers |
+   270→
+   271→### Phase 4: Hyperparameter Sweep
+   272→
+   273→**Priority: MEDIUM**
+   274→
+   275→#### 4.1 SweepConfig Class
+   276→
+   277→```python
+   278→@dataclass
+   279→class SweepConfig:
+   280→    chunkers: List[Chunker]
+   281→    embedders: List[Embedder]
+   282→    vector_stores: Optional[List[VectorStore]] = None
+   283→    k_values: List[int] = field(default_factory=lambda: [5, 10, 20])
+   284→    rerankers: Optional[List[Optional[Reranker]]] = None
+   285→    metrics: Optional[Dict[str, Metrics]] = None
+   286→```
+   287→
+   288→#### 4.2 Evaluation.sweep() Method
+   289→
+   290→```python
+   291→def sweep(self, sweep_config: SweepConfig) -&gt; SweepResults:
+   292→    results = []
+   293→    for chunker, embedder, k, reranker in itertools.product(
+   294→        sweep_config.chunkers,
+   295→        sweep_config.embedders,
+   296→        sweep_config.k_values,
+   297→        sweep_config.rerankers or [None],
+   298→    ):
+   299→        result = self.run(
+   300→            chunker=chunker,
+   301→            embedder=embedder,
+   302→            k=k,
+   303→            reranker=reranker,
+   304→            metrics=sweep_config.metrics,
+   305→        )
+   306→        results.append(result)
+   307→
+   308→    return SweepResults(results)
+   309→```
+   310→
+   311→### Phase 5: Synthetic Data Generation
+   312→
+   313→**Priority: LOW-MEDIUM**
+   314→
+   315→#### 5.1 Query-Excerpt Generation Pipeline
+   316→
+   317→Based on Chroma research methodology:
+   318→
+   319→```python
+   320→class SyntheticDataGenerator:
+   321→    def __init__(self, llm_client, embedding_model: Embedder):
+   322→        self.llm = llm_client
+   323→        self.embedder = embedding_model
+   324→
+   325→    def generate_from_corpus(
+   326→        self,
+   327→        documents: List[str],
+   328→        queries_per_doc: int = 5,
+   329→        relevance_threshold: float = 0.40,
+   330→        dedup_threshold: float = 0.70,
+   331→    ) -&gt; Dataset:
+   332→        # 1. Generate synthetic queries from documents
+   333→        # 2. Generate relevant excerpts for each query
+   334→        # 3. Filter by relevance (cosine similarity)
+   335→        # 4. Deduplicate similar queries
+   336→        # 5. Return Langsmith-compatible dataset
+   337→```
+   338→
+   339→#### 5.2 Dataset Export to Langsmith
+   340→
+   341→```python
+   342→def export_to_langsmith(self, dataset: Dataset, name: str) -&gt; str:
+   343→    from langsmith import Client
+   344→    client = Client()
+   345→    ls_dataset = client.create_dataset(name)
+   346→    for example in dataset:
+   347→        client.create_example(
+   348→            inputs={&quot;query&quot;: example.query},
+   349→            outputs={&quot;chunk_ids&quot;: example.relevant_chunk_ids, &quot;excerpts&quot;: example.excerpts},
+   350→            dataset_id=ls_dataset.id,
+   351→        )
+   352→    return ls_dataset.id
+   353→```
+   354→
+   355→### Phase 6: Advanced Metrics
+   356→
+   357→**Priority: LOW**
+   358→
+   359→#### 6.1 Additional Metrics to Consider
+   360→
+   361→| Metric | Description | Formula |
+   362→|--------|-------------|---------|
+   363→| `MRR` | Mean Reciprocal Rank | 1/rank of first relevant result |
+   364→| `NDCG` | Normalized Discounted Cumulative Gain | Standard IR metric |
+   365→| `MAP` | Mean Average Precision | Average precision across queries |
+   366→| `PrecisionOmega` | Upper bound precision assuming perfect recall | From Chroma research |
+   367→
+   368→#### 6.2 Metric Groups
+   369→
+   370→```python
+   371→# Convenience groupings
+   372→DEFAULT_CHUNK_METRICS = {
+   373→    &quot;chunk_recall&quot;: ChunkLevelRecall(),
+   374→    &quot;chunk_precision&quot;: ChunkLevelPrecision(),
+   375→}
+   376→
+   377→DEFAULT_TOKEN_METRICS = {
+   378→    &quot;token_recall&quot;: TokenLevelRecall(),
+   379→    &quot;token_precision&quot;: TokenLevelPrecision(),
+   380→    &quot;token_iou&quot;: TokenLevelIoU(),
+   381→}
+   382→
+   383→ALL_METRICS = {**DEFAULT_CHUNK_METRICS, **DEFAULT_TOKEN_METRICS}
+   384→```
+   385→
+   386→---
+   387→
+   388→## Architecture Decisions
+   389→
+   390→### Decision 1: Token-Level Metric Input Format
+   391→
+   392→**Options:**
+   393→- **A) Work with chunk IDs** - Requires storing chunk content mapping
+   394→- **B) Work with text directly** - Simpler but changes the Metrics interface
+   395→- **C) Hybrid approach** - Metrics can accept either, with adapters
+   396→
+   397→**Recommendation:** Option C - Create a `ChunkStore` abstraction that metrics can optionally use to resolve chunk IDs to content.
+   398→
+   399→### Decision 2: Chunk ID Generation
+   400→
+   401→**Options:**
+   402→- **A) Sequential IDs** - Simple but not stable across runs
+   403→- **B) Content hash** - Deterministic, allows deduplication
+   404→- **C) Composite key** - `{doc_id}:{chunk_index}` format
+   405→
+   406→**Recommendation:** Option B - Use content hash (e.g., first 8 chars of SHA256) for deterministic chunk identification.
+   407→
+   408→### Decision 3: Langsmith Dataset Schema
+   409→
+   410→**Proposed Schema:**
+   411→```python
+   412→# Input (query)
+   413→{
+   414→    &quot;query&quot;: str,
+   415→}
+   416→
+   417→# Output (ground truth)
+   418→{
+   419→    &quot;chunk_ids&quot;: List[str],           # For chunk-level metrics
+   420→    &quot;excerpts&quot;: List[str],            # Actual text for token-level metrics
+   421→    &quot;metadata&quot;: {
+   422→        &quot;doc_id&quot;: str,
+   423→        &quot;relevance_score&quot;: float,     # Optional
+   424→    }
+   425→}
+   426→```
+   427→
+   428→### Decision 4: Error Handling Strategy
+   429→
+   430→**Options:**
+   431→- **A) Fail fast** - Raise exceptions immediately
+   432→- **B) Collect errors** - Continue evaluation, report errors in results
+   433→- **C) Configurable** - Let user choose behavior
+   434→
+   435→**Recommendation:** Option C - Default to fail-fast for development, option to collect errors for production sweeps.
+   436→
+   437→---
+   438→
+   439→## Dependency Management
+   440→
+   441→### Required Dependencies (to add to pyproject.toml)
+   442→
+   443→```toml
+   444→[project.optional-dependencies]
+   445→# Core evaluation
+   446→eval = [
+   447→    &quot;tiktoken&gt;=0.5.0&quot;,           # Token counting for token-level metrics
+   448→    &quot;numpy&gt;=1.24.0&quot;,             # Numerical operations
+   449→]
+   450→
+   451→# Vector stores
+   452→chroma = [&quot;chromadb&gt;=0.4.0&quot;]
+   453→qdrant = [&quot;qdrant-client&gt;=1.6.0&quot;]
+   454→
+   455→# Embedders
+   456→openai = [&quot;openai&gt;=1.0.0&quot;]
+   457→sentence-transformers = [&quot;sentence-transformers&gt;=2.2.0&quot;]
+   458→cohere = [&quot;cohere&gt;=4.0.0&quot;]
+   459→
+   460→# Rerankers
+   461→rerankers = [&quot;cohere&gt;=4.0.0&quot;]
+   462→
+   463→# Data generation
+   464→datagen = [
+   465→    &quot;openai&gt;=1.0.0&quot;,
+   466→    &quot;anthropic&gt;=0.18.0&quot;,
+   467→]
+   468→
+   469→# Full installation
+   470→all = [
+   471→    &quot;rag-evaluation-framework[eval,chroma,openai,rerankers,datagen]&quot;
+   472→]
+   473→```
+   474→
+   475→---
+   476→
+   477→## Testing Strategy
+   478→
+   479→### Unit Tests
+   480→
+   481→```
+   482→tests/
+   483→├── test_metrics/
+   484→│   ├── test_chunk_level_recall.py
+   485→│   ├── test_chunk_level_precision.py
+   486→│   ├── test_token_level_recall.py
+   487→│   ├── test_token_level_precision.py
+   488→│   └── test_token_level_iou.py
+   489→├── test_chunkers/
+   490→│   ├── test_recursive_character_chunker.py
+   491→│   └── test_fixed_token_chunker.py
+   492→├── test_evaluation/
+   493→│   ├── test_evaluation_run.py
+   494→│   └── test_evaluation_sweep.py
+   495→└── conftest.py  # Fixtures for mock Langsmith objects
+   496→```
+   497→
+   498→### Integration Tests
+   499→
+   500→```python
+   501→# Test full pipeline with mock components
+   502→def test_full_evaluation_pipeline():
+   503→    eval = Evaluation(
+   504→        langsmith_dataset_name=&quot;test-dataset&quot;,
+   505→        kb_data_path=&quot;./test_kb&quot;
+   506→    )
+   507→    results = eval.run(
+   508→        chunker=MockChunker(),
+   509→        embedder=MockEmbedder(),
+   510→        vector_store=MockVectorStore(),
+   511→        k=5,
+   512→    )
+   513→    assert results.metrics_summary[&quot;chunk_recall@5&quot;] &gt;= 0.0
+   514→```
+   515→
+   516→---
+   517→
+   518→## Implementation Priority Matrix
+   519→
+   520→| Phase | Component | Priority | Effort | Dependencies |
+   521→|-------|-----------|----------|--------|--------------|
+   522→| 1.1 | Fix ChunkLevelRecall | HIGH | Low | None |
+   523→| 1.2 | ChunkLevelPrecision | HIGH | Low | None |
+   524→| 1.3 | TokenLevelRecall | HIGH | Medium | tiktoken |
+   525→| 1.3 | TokenLevelPrecision | HIGH | Low | TokenLevelRecall |
+   526→| 1.3 | TokenLevelIoU | HIGH | Low | TokenLevelRecall |
+   527→| 2.1 | Evaluation.run() | HIGH | High | Phase 1 |
+   528→| 2.2 | EvaluationResults | HIGH | Medium | Phase 2.1 |
+   529→| 3.1 | RecursiveCharacterChunker | MEDIUM | Medium | None |
+   530→| 3.2 | OpenAIEmbedder | MEDIUM | Low | openai |
+   531→| 3.3 | ChromaVectorStore | MEDIUM | Medium | chromadb |
+   532→| 4 | Sweep functionality | MEDIUM | High | Phase 2-3 |
+   533→| 5 | Synthetic data generation | LOW | High | openai/anthropic |
+   534→| 6 | Advanced metrics (MRR, NDCG) | LOW | Medium | None |
+   535→
+   536→---
+   537→
+   538→## Success Criteria
+   539→
+   540→### MVP (Minimum Viable Product)
+   541→- [ ] All chunk-level metrics working (Recall, Precision)
+   542→- [ ] At least TokenLevelRecall implemented
+   543→- [ ] `Evaluation.run()` executes full pipeline with Langsmith
+   544→- [ ] One working chunker implementation
+   545→- [ ] One working embedder implementation
+   546→- [ ] ChromaVectorStore working
+   547→
+   548→### V1.0 Release
+   549→- [ ] All token-level metrics (Recall, Precision, IoU, F1)
+   550→- [ ] Hyperparameter sweep functionality
+   551→- [ ] Multiple chunker implementations
+   552→- [ ] Multiple embedder implementations
+   553→- [ ] Documentation with examples
+   554→- [ ] Test coverage &gt; 80%
+   555→
+   556→### Future Enhancements
+   557→- [ ] Synthetic data generation module
+   558→- [ ] Advanced metrics (MRR, NDCG, MAP)
+   559→- [ ] Visualization dashboard
+   560→- [ ] CLI interface
+   561→- [ ] Async evaluation support
+   562→
+   563→---
+   564→
+   565→## Open Questions for Clarification
+   566→
+   567→### Architecture Questions
+   568→
+   569→1. **Langsmith Dataset Schema**: What is the expected structure of your Langsmith evaluation datasets? Specifically:
+   570→   - What field names do you use for ground truth chunk IDs?
+   571→   - Do you store actual text excerpts or just chunk IDs?
+   572→   - How do you currently identify chunks (sequential IDs, hashes, composite keys)?
+   573→
+   574→2. **Token-Level Metric Scope**: For token-level metrics, should we:
+   575→   - Compare tokens from chunk IDs (requires chunk content storage/lookup)?
+   576→   - Compare tokens from actual text strings passed directly?
+   577→   - Support both approaches?
+   578→
+   579→3. **Chunk Content Storage**: Token-level metrics need access to chunk text content. Should we:
+   580→   - Store chunk content in the vector store metadata?
+   581→   - Maintain a separate ChunkStore/ChunkRegistry?
+   582→   - Require users to pass chunk content directly?
+   583→
+   584→### Feature Prioritization
+   585→
+   586→4. **Which concrete implementations are highest priority?**
+   587→   - Chunkers: RecursiveCharacter, FixedToken, Semantic, Sentence?
+   588→   - Embedders: OpenAI, SentenceTransformers, Cohere?
+   589→   - Vector Stores: Chroma, Qdrant, Pinecone, In-Memory?
+   590→   - Rerankers: Cohere, CrossEncoder?
+   591→
+   592→5. **Hyperparameter Sweep**: Is the sweep functionality important for V1, or can it be deferred?
+   593→
+   594→6. **Synthetic Data Generation**: How important is the `synthetic_datagen` module? Do you have existing datasets, or is generation critical?
+   595→
+   596→### Integration Questions
+   597→
+   598→7. **Existing Evaluation Datasets**: Do you have Langsmith datasets already populated that we need to support? If so, what&#x27;s their schema?
+   599→
+   600→8. **Langsmith Experiment Tracking**: Any specific requirements for experiment naming, metadata, or organization?
+   601→
+   602→9. **Comparison with chunking_evaluation**: Are there specific features from the [chunking_evaluation](https://github.com/brandonstarxel/chunking_evaluation) library you want to replicate or improve upon?
+   603→
+   604→### Technical Questions
+   605→
+   606→10. **Tokenizer Choice**: Should we standardize on OpenAI&#x27;s `cl100k_base` tokenizer for token-level metrics, or support configurable tokenizers?
+   607→
+   608→11. **Error Handling**: Prefer fail-fast (exceptions) or graceful degradation (collect errors, continue)?
+   609→
+   610→12. **Async Support**: Is async evaluation important for your use case (large datasets, parallel processing)?
+   611→
+   612→13. **Configuration Management**: Do you want YAML/JSON config file support, or is Python-only configuration sufficient?
+   613→
+   614→---
+   615→
+   616→## References
+   617→
+   618→- [Chroma Chunking Evaluation Research](https://research.trychroma.com/evaluating-chunking)
+   619→- [chunking_evaluation GitHub](https://github.com/brandonstarxel/chunking_evaluation)
+   620→- [Langsmith Evaluation Documentation](https://docs.smith.langchain.com/evaluation)
+   621→- [OpenAI tiktoken](https://github.com/openai/tiktoken)
+   622→
+   623→---
+   624→
+   625→*Document Version: 1.0*
+   626→*Created: January 2026*
+   627→*Last Updated: January 2026*
+   628→
+
+&lt;system-reminder&gt;
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+&lt;/system-reminder&gt;
+</pre></div><button class="expand-btn">Show more</button></div></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-22-861Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-22-861Z" class="timestamp-link"><time datetime="2026-01-12T18:47:22.861Z" data-timestamp="2026-01-12T18:47:22.861Z">2026-01-12T18:47:22.861Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>Found it. The user is asking about "Option A" in the context of Decision 2: Chunk ID Generation, which mentions:</p>
+<p><strong>Decision 2: Chunk ID Generation</strong></p>
+<p><strong>Options:</strong>
+- <strong>A) Sequential IDs</strong> - Simple but not stable across runs
+- <strong>B) Content hash</strong> - Deterministic, allows deduplication
+- <strong>C) Composite key</strong> - <code>{doc_id}:{chunk_index}</code> format</p>
+<p><strong>Recommendation:</strong> Option B - Use content hash (e.g., first 8 chars of SHA256) for deterministic chunk identification.</p>
+<p>The user asked "what do you mean by 'requires chunker to track position'" regarding option A. But looking at the document, I don't see that exact phrase. Let me re-read...</p>
+<p>Actually, looking more carefully, I see that the phrase "requires chunker to track position" doesn't appear in the document. Perhaps the user is referring to a different version of the document, or they might be misremembering. </p>
+<p>Let me look at the options again:</p>
+<p>For Decision 1: Token-Level Metric Input Format:
+- <strong>A) Work with chunk IDs</strong> - Requires storing chunk content mapping
+- <strong>B) Work with text directly</strong> - Simpler but changes the Metrics interface
+- <strong>C) Hybrid approach</strong> - Metrics can accept either, with adapters</p>
+<p>For Decision 2: Chunk ID Generation:
+- <strong>A) Sequential IDs</strong> - Simple but not stable across runs</p>
+<p>Neither mentions "requires chunker to track position". However, there might be a connection the user is making. Perhaps they're asking about Option A in Decision 2 (Sequential IDs) and wondering how that relates to position tracking.</p>
+<p>I should clarify with the user which decision they're referring to, since there are multiple "option A"s in the document. Or maybe they saw a different version of the document or heard this explanation somewhere else.</p>
+<p>Let me ask them to clarify which decision they're referring to.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-47-30-570Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-47-30-570Z" class="timestamp-link"><time datetime="2026-01-12T18:47:30.570Z" data-timestamp="2026-01-12T18:47:30.570Z">2026-01-12T18:47:30.570Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>I found the implementation plan. There are multiple decision questions with "Option A" listed. Looking at them:</p>
+<p><strong>Decision 1: Token-Level Metric Input Format</strong>
+- <strong>A) Work with chunk IDs</strong> - Requires storing chunk content mapping</p>
+<p><strong>Decision 2: Chunk ID Generation</strong>
+- <strong>A) Sequential IDs</strong> - Simple but not stable across runs</p>
+<p>I don't see the exact phrase "requires chunker to track position" in the current document. Which decision are you asking about?</p>
+<p>If you're asking about <strong>Decision 2, Option A (Sequential IDs)</strong>, the concern there is that sequential IDs like <code>chunk_0</code>, <code>chunk_1</code>, etc. are based on the order/position chunks appear during processing. The issue is:</p>
+<ol>
+<li><strong>Position dependency</strong> - The ID <code>chunk_5</code> only makes sense if the chunker processes documents in a consistent order and tracks "this is the 5th chunk I've created"</li>
+<li><strong>Not stable across runs</strong> - If you re-chunk the same corpus with slightly different settings (or even process files in a different order), <code>chunk_5</code> might refer to completely different content</li>
+<li><strong>Cross-session issues</strong> - Ground truth data referencing <code>chunk_5</code> becomes invalid if you rebuild the index</li>
+</ol>
+<p>This is why the recommendation is <strong>Option B (content hash)</strong> - a hash like <code>a3f2b1c8</code> derived from the chunk's actual text is deterministic and doesn't depend on processing order.</p>
+<p>Is this the option you were asking about, or were you referring to something from a previous conversation?</p></div></div></div>
+<div class="message user" id="msg-2026-01-12T18-48-33-880Z"><div class="message-header"><span class="role-label">User</span><a href="#msg-2026-01-12T18-48-33-880Z" class="timestamp-link"><time datetime="2026-01-12T18:48:33.880Z" data-timestamp="2026-01-12T18:48:33.880Z">2026-01-12T18:48:33.880Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>no not this, I am referring to the previous message you sent </p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-48-38-901Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-48-38-901Z" class="timestamp-link"><time datetime="2026-01-12T18:48:38.901Z" data-timestamp="2026-01-12T18:48:38.901Z">2026-01-12T18:48:38.901Z</time></a></div><div class="message-content">
+<div class="thinking"><div class="thinking-label">Thinking</div><p>The user is referring to a previous message I sent, but looking at the conversation history, this is the first exchange we're having. There's no previous message from me before this conversation started.</p>
+<p>This suggests the user might be:
+1. Referring to a conversation that happened in a different session that I don't have access to
+2. Confusing this conversation with another one
+3. There might have been some context or message that wasn't included in this conversation</p>
+<p>I should let the user know that I don't have access to any previous messages and ask them to share the context or the specific decision question they're referring to.</p></div></div></div>
+<div class="message assistant" id="msg-2026-01-12T18-48-41-654Z"><div class="message-header"><span class="role-label">Assistant</span><a href="#msg-2026-01-12T18-48-41-654Z" class="timestamp-link"><time datetime="2026-01-12T18:48:41.654Z" data-timestamp="2026-01-12T18:48:41.654Z">2026-01-12T18:48:41.654Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>I don't have access to any previous messages from before this conversation started. This appears to be the beginning of our session - my first response was searching for and reading the implementation plan.</p>
+<p>Could you share the specific decision question or text you're referring to? You could either:
+1. Paste the relevant section here
+2. Point me to a file where it's written
+3. Describe what the decision was about</p>
+<p>That way I can give you a proper explanation of what "Option A" and the position tracking means in that context.</p></div></div></div>
+<div class="message user" id="msg-2026-01-12T18-50-02-380Z"><div class="message-header"><span class="role-label">User</span><a href="#msg-2026-01-12T18-50-02-380Z" class="timestamp-link"><time datetime="2026-01-12T18:50:02.380Z" data-timestamp="2026-01-12T18:50:02.380Z">2026-01-12T18:50:02.380Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>I am talking about this:</p></div></div></div>
+<div class="message user" id="msg-2026-01-12T18-50-05-379Z"><div class="message-header"><span class="role-label">User</span><a href="#msg-2026-01-12T18-50-05-379Z" class="timestamp-link"><time datetime="2026-01-12T18:50:05.379Z" data-timestamp="2026-01-12T18:50:05.379Z">2026-01-12T18:50:05.379Z</time></a></div><div class="message-content">
+<div class="assistant-text"><p>[Request interrupted by user]</p></div></div></div>
+        
+
+<div class="pagination">
+<a href="index.html" class="index-link">Index</a>
+<a href="page-003.html">&larr; Prev</a>
+<a href="page-001.html">1</a>
+<a href="page-002.html">2</a>
+<a href="page-003.html">3</a>
+<span class="current">4</span>
+<a href="page-005.html">5</a>
+<a href="page-006.html">6</a>
+<a href="page-007.html">7</a>
+<a href="page-008.html">8</a>
+<a href="page-009.html">9</a>
+<a href="page-010.html">10</a>
+<a href="page-011.html">11</a>
+<a href="page-005.html">Next &rarr;</a>
+</div>
+
+    </div>
+    <script>
+document.querySelectorAll('time[data-timestamp]').forEach(function(el) {
+    const timestamp = el.getAttribute('data-timestamp');
+    const date = new Date(timestamp);
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    const timeStr = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    if (isToday) { el.textContent = timeStr; }
+    else { el.textContent = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + timeStr; }
+});
+document.querySelectorAll('pre.json').forEach(function(el) {
+    let text = el.textContent;
+    text = text.replace(/"([^"]+)":/g, '<span style="color: #ce93d8">"$1"</span>:');
+    text = text.replace(/: "([^"]*)"/g, ': <span style="color: #81d4fa">"$1"</span>');
+    text = text.replace(/: (\d+)/g, ': <span style="color: #ffcc80">$1</span>');
+    text = text.replace(/: (true|false|null)/g, ': <span style="color: #f48fb1">$1</span>');
+    el.innerHTML = text;
+});
+document.querySelectorAll('.truncatable').forEach(function(wrapper) {
+    const content = wrapper.querySelector('.truncatable-content');
+    const btn = wrapper.querySelector('.expand-btn');
+    if (content.scrollHeight > 250) {
+        wrapper.classList.add('truncated');
+        btn.addEventListener('click', function() {
+            if (wrapper.classList.contains('truncated')) { wrapper.classList.remove('truncated'); wrapper.classList.add('expanded'); btn.textContent = 'Show less'; }
+            else { wrapper.classList.remove('expanded'); wrapper.classList.add('truncated'); btn.textContent = 'Show more'; }
+        });
+    }
+});
+</script>
+<script>
+(function() {
+    var hostname = window.location.hostname;
+    if (hostname !== 'gisthost.github.io' && hostname !== 'gistpreview.github.io') return;
+    // URL format: https://gisthost.github.io/?GIST_ID/filename.html
+    var match = window.location.search.match(/^\?([^/]+)/);
+    if (!match) return;
+    var gistId = match[1];
+
+    function rewriteLinks(root) {
+        (root || document).querySelectorAll('a[href]').forEach(function(link) {
+            var href = link.getAttribute('href');
+            // Skip already-rewritten links (issue #26 fix)
+            if (href.startsWith('?')) return;
+            // Skip external links and anchors
+            if (href.startsWith('http') || href.startsWith('#') || href.startsWith('//')) return;
+            // Handle anchor in relative URL (e.g., page-001.html#msg-123)
+            var parts = href.split('#');
+            var filename = parts[0];
+            var anchor = parts.length > 1 ? '#' + parts[1] : '';
+            link.setAttribute('href', '?' + gistId + '/' + filename + anchor);
+        });
+    }
+
+    // Run immediately
+    rewriteLinks();
+
+    // Also run on DOMContentLoaded in case DOM isn't ready yet
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { rewriteLinks(); });
+    }
+
+    // Use MutationObserver to catch dynamically added content
+    // gistpreview.github.io may add content after initial load
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) { // Element node
+                    rewriteLinks(node);
+                    // Also check if the node itself is a link
+                    if (node.tagName === 'A' && node.getAttribute('href')) {
+                        var href = node.getAttribute('href');
+                        if (!href.startsWith('?') && !href.startsWith('http') &&
+                            !href.startsWith('#') && !href.startsWith('//')) {
+                            var parts = href.split('#');
+                            var filename = parts[0];
+                            var anchor = parts.length > 1 ? '#' + parts[1] : '';
+                            node.setAttribute('href', '?' + gistId + '/' + filename + anchor);
+                        }
+                    }
+                }
+            });
+        });
+    });
+
+    // Start observing once body exists
+    function startObserving() {
+        if (document.body) {
+            observer.observe(document.body, { childList: true, subtree: true });
+        } else {
+            setTimeout(startObserving, 10);
+        }
+    }
+    startObserving();
+
+    // Handle fragment navigation after dynamic content loads
+    // gisthost.github.io/gistpreview.github.io loads content dynamically, so the browser's
+    // native fragment navigation fails because the element doesn't exist yet
+    function scrollToFragment() {
+        var hash = window.location.hash;
+        if (!hash) return false;
+        var targetId = hash.substring(1);
+        var target = document.getElementById(targetId);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return true;
+        }
+        return false;
+    }
+
+    // Try immediately in case content is already loaded
+    if (!scrollToFragment()) {
+        // Retry with increasing delays to handle dynamic content loading
+        var delays = [100, 300, 500, 1000, 2000];
+        delays.forEach(function(delay) {
+            setTimeout(scrollToFragment, delay);
+        });
+    }
+})();
+</script>
+</body>
+</html>
