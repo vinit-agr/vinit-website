@@ -25,7 +25,7 @@ export default function ContactPage() {
         </div>
         <div className="flex items-center space-x-4">
           <Github className="w-6 h-6" />
-          <a href="https://github.com/volumetric/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">GitHub Profile</a>
+          <a href="https://github.com/vinit-agr/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">GitHub Profile</a>
         </div>
       </div>
     </div>
