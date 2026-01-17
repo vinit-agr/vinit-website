@@ -33,6 +33,7 @@
     "cors": "^2.8.5",
     "date-fns": "^3.3.1",
     "dotenv": "^16.4.5",
+    "framer-motion": "^12.26.2",
     "googleapis": "^144.0.0",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.441.0",
